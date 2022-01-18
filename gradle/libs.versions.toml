@@ -1,0 +1,55 @@
+[versions]
+ktx = "1.6.0"
+kt = "1.6.10"
+binom = "0.1.32"
+arrow = "1.0.1"
+
+# Libraries
+[libraries.kt-reflect]
+module = "org.jetbrains.kotlin:kotlin-reflect"
+version.ref = "kt"
+
+[libraries.kt-test-common]
+module = "org.jetbrains.kotlin:kotlin-test-common"
+version.ref = "kt"
+
+[libraries.kt-test-junit]
+module = "org.jetbrains.kotlin:kotlin-test-junit"
+version.ref = "kt"
+
+[libraries.kt-test-annotations-common]
+module = "org.jetbrains.kotlin:kotlin-test-annotations-common"
+version.ref = "kt"
+
+[libraries.ktx-coroutines-core]
+module = "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+version.ref = "ktx"
+
+[libraries.ktx-coroutines-jdk8]
+module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8"
+version.ref = "ktx"
+
+[libraries.binom-file]
+module = "pw.binom.io:file"
+version.ref = "binom"
+
+[libraries.arrow-core]
+module = "io.arrow-kt:arrow-core"
+version.ref = "arrow"
+
+# Plugins
+[plugins.kotlin]
+id = "org.jetbrains.kotlin.multiplatform"
+version = "1.6.10"
+
+[plugins.spotless]
+id = "com.diffplug.spotless"
+version = "6.1.0"
+
+[plugins.ktlint]
+id = "org.jlleitschuh.gradle.ktlint"
+version = "10.2.1"
+
+[plugins.detekt]
+id = "io.gitlab.arturbosch.detekt"
+version = "1.19.0"
