@@ -21,8 +21,8 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
-  alias(libs.plugins.kotlin) apply false
-  alias(libs.plugins.detekt) apply false
+  alias(libs.plugins.kotlin)
+  alias(libs.plugins.detekt)
 }
 
 group = "org.plank"
@@ -32,7 +32,7 @@ repositories {
   mavenCentral()
 }
 
-subprojects {
+allprojects {
   apply(plugin = "org.jetbrains.kotlin.multiplatform")
   apply<DetektPlugin>()
 
@@ -42,44 +42,57 @@ subprojects {
   repositories {
     mavenCentral()
   }
+}
 
-  configure<DetektExtension> {
-    buildUponDefaultConfig = true
-    allRules = false
+configure<DetektExtension> {
+  buildUponDefaultConfig = true
+  allRules = false
 
-    config = files("${rootProject.projectDir}/config/detekt.yml")
-    baseline = file("${rootProject.projectDir}/config/baseline.xml")
+  config = files("${rootProject.projectDir}/config/detekt.yml")
+  baseline = file("${rootProject.projectDir}/config/baseline.xml")
+}
+
+configure<KotlinMultiplatformExtension> {
+  explicitApi()
+
+  jvm {
+    withJava()
+    compilations.all {
+      kotlinOptions.jvmTarget = "17"
+    }
+    testRuns["test"].executionTask.configure {
+      useJUnitPlatform()
+    }
   }
 
-  configure<KotlinMultiplatformExtension> {
-    jvm {
-      withJava()
-      compilations.all {
-        kotlinOptions.jvmTarget = "11"
+  js(BOTH) {
+    nodejs()
+  }
+
+  val hostOs = System.getProperty("os.name")
+  val isMingwX64 = hostOs.startsWith("Windows")
+  val nativeTarget = when {
+    hostOs == "Mac OS X" -> macosX64("native")
+    hostOs == "Linux" -> linuxX64("native")
+    isMingwX64 -> mingwX64("native")
+    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+  }
+
+  nativeTarget.apply {
+    val main by compilations.getting
+    val llvm by main.cinterops.creating
+
+    binaries {
+      executable {
+        entryPoint = "org.plank.llvm4k.main"
       }
-      testRuns["test"].executionTask.configure {
-        useJUnitPlatform()
-      }
     }
+  }
 
-    js(BOTH) {
-      nodejs()
-    }
-
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-      hostOs == "Mac OS X" -> macosX64("native")
-      hostOs == "Linux" -> linuxX64("native")
-      isMingwX64 -> mingwX64("native")
-      else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
-
-    sourceSets {
-      val commonTest by getting {
-        dependencies {
-          implementation(kotlin("test"))
-        }
+  sourceSets {
+    val commonTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
       }
     }
   }
