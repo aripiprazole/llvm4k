@@ -26,9 +26,9 @@ import llvm.LLVMValueRef
 import org.plank.llvm4k.printToString
 import org.plank.llvm4k.toInt
 
-public actual sealed interface GlobalObject : GlobalValue
+public actual sealed class GlobalObject : GlobalValue()
 
-public actual class GlobalIFunc(public override val ref: LLVMValueRef?) : GlobalObject {
+public actual class GlobalIFunc(public override val ref: LLVMValueRef?) : GlobalObject() {
   public actual val hasResolver: Boolean get() = resolver != null
 
   public actual var resolver: Function?
@@ -44,11 +44,9 @@ public actual class GlobalIFunc(public override val ref: LLVMValueRef?) : Global
   public actual fun delete() {
     llvm.LLVMRemoveGlobalIFunc(ref)
   }
-
-  public actual override fun toString(): String = printToString()
 }
 
-public actual class GlobalVariable(public override val ref: LLVMValueRef?) : GlobalObject {
+public actual class GlobalVariable(public override val ref: LLVMValueRef?) : GlobalObject() {
   public actual var threadLocal: Boolean
     get(): Boolean = llvm.LLVMIsThreadLocal(ref) == 1
     set(value) {
@@ -80,7 +78,7 @@ public actual class GlobalVariable(public override val ref: LLVMValueRef?) : Glo
   }
 }
 
-public actual class Function(public override val ref: LLVMValueRef?) : GlobalObject {
+public actual class Function(public override val ref: LLVMValueRef?) : GlobalObject() {
   public actual override val type: FunctionType
     get(): FunctionType = (super.type as PointerType).contained as FunctionType
 

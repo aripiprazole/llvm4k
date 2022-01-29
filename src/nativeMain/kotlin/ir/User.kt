@@ -16,4 +16,4 @@
 
 package org.plank.llvm4k.ir
 
-public actual sealed interface User : Value
+public actual sealed class User : Value()

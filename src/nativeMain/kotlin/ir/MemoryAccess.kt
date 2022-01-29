@@ -17,17 +17,12 @@
 package org.plank.llvm4k.ir
 
 import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
 
-public actual sealed interface MemoryAccess : User
+public actual sealed class MemoryAccess : User()
 
-public actual class MemoryPhi(public override val ref: LLVMValueRef?) : MemoryAccess {
-  public override fun toString(): String = printToString()
-}
+public actual class MemoryPhi(public override val ref: LLVMValueRef?) : MemoryAccess()
 
-public actual sealed class MemoryUseOrDef : MemoryAccess {
-  public override fun toString(): String = printToString()
-}
+public actual sealed class MemoryUseOrDef : MemoryAccess()
 
 public actual class MemoryUse(public override val ref: LLVMValueRef?) : MemoryUseOrDef()
 

@@ -24,25 +24,19 @@ import kotlinx.cinterop.value
 import llvm.LLVMValueRef
 import org.plank.llvm4k.printToString
 
-public actual sealed interface ConstantData : Constant
+public actual sealed class ConstantData : Constant()
 
-public actual class ConstantAggregate(public override val ref: LLVMValueRef?) : ConstantData {
-  public override fun toString(): String = printToString()
-}
+public actual class ConstantAggregate(public override val ref: LLVMValueRef?) : ConstantData()
 
-public actual sealed interface ConstantDataSequential : ConstantData
+public actual sealed class ConstantDataSequential : ConstantData()
 
 public actual class ConstantDataArray(public override val ref: LLVMValueRef?) :
-  ConstantDataSequential {
-  public override fun toString(): String = printToString()
-}
+  ConstantDataSequential()
 
 public actual class ConstantDataVector(public override val ref: LLVMValueRef?) :
-  ConstantDataSequential {
-  public override fun toString(): String = printToString()
-}
+  ConstantDataSequential()
 
-public actual class ConstantFP(public override val ref: LLVMValueRef?) : ConstantData {
+public actual class ConstantFP(public override val ref: LLVMValueRef?) : ConstantData() {
   public actual val realValue: FPValue
     get(): FPValue = memScoped {
       val lossy = alloc<IntVar>()
@@ -56,22 +50,22 @@ public actual class ConstantFP(public override val ref: LLVMValueRef?) : Constan
   public override fun toString(): String = printToString()
 }
 
-public actual class ConstantInt(public override val ref: LLVMValueRef?) : ConstantData {
+public actual class ConstantInt(public override val ref: LLVMValueRef?) : ConstantData() {
   public actual val zExtValue: Long get() = llvm.LLVMConstIntGetZExtValue(ref).toLong()
   public actual val sExtValue: Long get() = llvm.LLVMConstIntGetSExtValue(ref)
 
   public override fun toString(): String = printToString()
 }
 
-public actual class ConstantPointerNull(public override val ref: LLVMValueRef?) : ConstantData {
+public actual class ConstantPointerNull(public override val ref: LLVMValueRef?) : ConstantData() {
   public override fun toString(): String = printToString()
 }
 
-public actual class ConstantTokenNone(public override val ref: LLVMValueRef?) : ConstantData {
+public actual class ConstantTokenNone(public override val ref: LLVMValueRef?) : ConstantData() {
   public override fun toString(): String = printToString()
 }
 
-public actual sealed class UndefValue : ConstantData {
+public actual sealed class UndefValue : ConstantData() {
   public override fun toString(): String = printToString()
 }
 

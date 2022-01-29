@@ -18,5 +18,4 @@ package org.plank.llvm4k.ir
 
 import llvm.LLVMValueRef
 
-public actual class BlockAddress(public override val ref: LLVMValueRef?) :
-  Constant by ConstantImpl(ref)
+public actual class BlockAddress(public override val ref: LLVMValueRef?) : Constant()

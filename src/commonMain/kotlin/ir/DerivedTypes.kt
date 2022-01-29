@@ -18,7 +18,7 @@ package org.plank.llvm4k.ir
 
 import org.plank.llvm4k.Context
 
-public expect sealed interface Type {
+public expect sealed class Type {
   public open val context: Context
   public open val isSized: Boolean
   public open val size: ConstantInt
@@ -144,16 +144,12 @@ public fun FunctionType(
   return FunctionType(returnType, params.toList(), isVarargs)
 }
 
-public expect sealed class StubType : Type {
-  public override fun toString(): String
-}
+public expect class VoidType : Type
 
-public expect class VoidType : StubType
+public expect class LabelType : Type
 
-public expect class LabelType : StubType
+public expect class MetadataType : Type
 
-public expect class MetadataType : StubType
+public expect class TokenType : Type
 
-public expect class TokenType : StubType
-
-public expect class X86MMXType : StubType
+public expect class X86MMXType : Type

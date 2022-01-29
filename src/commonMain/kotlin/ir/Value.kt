@@ -16,7 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed interface Value {
+public expect sealed class Value {
   public open val type: Type
   public open val kind: Kind
 
@@ -66,6 +66,6 @@ public expect sealed interface Value {
   }
 }
 
-public expect sealed interface NamedValue : Value {
+public expect interface NamedValue {
   public open var name: String
 }

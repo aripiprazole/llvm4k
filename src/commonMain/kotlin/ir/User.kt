@@ -16,4 +16,4 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed interface User : Value
+public expect sealed class User : Value

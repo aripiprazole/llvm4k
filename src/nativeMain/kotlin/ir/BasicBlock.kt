@@ -46,5 +46,5 @@ public actual class BasicBlock(public override val ref: LLVMBasicBlockRef?) :
 
   public actual override fun toString(): String = asValue.toString()
 
-  public actual class AsValue(public override val ref: LLVMValueRef?) : Value by ValueImpl(ref)
+  public actual class AsValue(public override val ref: LLVMValueRef?) : Value()
 }

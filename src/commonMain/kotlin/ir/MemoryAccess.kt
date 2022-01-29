@@ -16,7 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed interface MemoryAccess : User
+public expect sealed class MemoryAccess : User
 
 public expect class MemoryPhi : MemoryAccess
 

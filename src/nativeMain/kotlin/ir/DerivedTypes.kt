@@ -30,18 +30,18 @@ import org.plank.llvm4k.Owner
 import org.plank.llvm4k.printToString
 import org.plank.llvm4k.toInt
 
-public actual sealed interface Type : Owner<LLVMTypeRef> {
-  public actual val context: Context get() = Context(LLVMGetTypeContext(ref))
-  public actual val isSized: Boolean get() = llvm.LLVMTypeIsSized(ref) == 1
-  public actual val size: ConstantInt get() = ConstantInt(llvm.LLVMSizeOf(ref))
-  public actual val align: ConstantInt get() = ConstantInt(llvm.LLVMAlignOf(ref))
-  public actual val kind: Kind get() = Kind.byValue(llvm.LLVMGetTypeKind(ref).value)
+public actual sealed class Type : Owner<LLVMTypeRef> {
+  public actual open val context: Context get() = Context(LLVMGetTypeContext(ref))
+  public actual open val isSized: Boolean get() = llvm.LLVMTypeIsSized(ref) == 1
+  public actual open val size: ConstantInt get() = ConstantInt(llvm.LLVMSizeOf(ref))
+  public actual open val align: ConstantInt get() = ConstantInt(llvm.LLVMAlignOf(ref))
+  public actual open val kind: Kind get() = Kind.byValue(llvm.LLVMGetTypeKind(ref).value)
 
-  public actual fun pointer(addrSpace: AddrSpace): PointerType {
+  public actual open fun pointer(addrSpace: AddrSpace): PointerType {
     return PointerType(this, addrSpace)
   }
 
-  public actual override fun toString(): String
+  public actual override fun toString(): String = printToString()
 
   public actual enum class Kind(public val llvm: LLVMTypeKind) {
     Void(LLVMTypeKind.LLVMVoidTypeKind),
@@ -83,7 +83,7 @@ public actual sealed interface Type : Owner<LLVMTypeRef> {
   }
 }
 
-public actual class StructType(public override val ref: LLVMTypeRef?) : Type {
+public actual class StructType(public override val ref: LLVMTypeRef?) : Type() {
   public actual val name: String? get() = llvm.LLVMGetStructName(ref)?.toKString()
 
   public actual val isPacked: Boolean get() = llvm.LLVMIsPackedStruct(ref) == 1
@@ -132,13 +132,9 @@ public actual class StructType(public override val ref: LLVMTypeRef?) : Type {
 
     return ConstantAggregate(ref)
   }
-
-  public override fun toString(): String {
-    return llvm.LLVMPrintTypeToString(ref)!!.toKString()
-  }
 }
 
-public actual sealed class CompositeType : Type {
+public actual sealed class CompositeType : Type() {
   public actual abstract val count: Int
   public actual val contained: Type get() = Type(llvm.LLVMGetElementType(ref))
 
@@ -150,8 +146,6 @@ public actual sealed class CompositeType : Type {
 
       (0 until count).map { Type(arguments[it]) }
     }
-
-  public actual override fun toString(): String = printToString()
 }
 
 public actual sealed class VectorType : CompositeType() {
@@ -188,7 +182,7 @@ public actual class PointerType(public override val ref: LLVMTypeRef?) : Composi
     this(llvm.LLVMPointerType(contained.ref, addrSpace.value))
 }
 
-public actual class IntegerType(public override val ref: LLVMTypeRef?) : Type {
+public actual class IntegerType(public override val ref: LLVMTypeRef?) : Type() {
   public actual val constantNull: ConstantInt get() = ConstantInt(llvm.LLVMConstNull(ref))
   public actual val allOnes: ConstantInt get() = ConstantInt(llvm.LLVMConstAllOnes(ref))
   public actual val typeWidth: Int get() = llvm.LLVMGetIntTypeWidth(ref).toInt()
@@ -200,11 +194,9 @@ public actual class IntegerType(public override val ref: LLVMTypeRef?) : Type {
   public actual fun getConstant(value: Long, unsigned: Boolean): ConstantInt {
     return ConstantInt(llvm.LLVMConstInt(ref, value.toULong(), unsigned.toInt()))
   }
-
-  public actual override fun toString(): String = printToString()
 }
 
-public actual class FloatType(public override val ref: LLVMTypeRef?) : Type {
+public actual class FloatType(public override val ref: LLVMTypeRef?) : Type() {
   public actual val constantNull: ConstantFP get() = ConstantFP(llvm.LLVMConstNull(ref))
   public actual val allOnes: ConstantFP get() = ConstantFP(llvm.LLVMConstAllOnes(ref))
 
@@ -219,7 +211,7 @@ public actual class FloatType(public override val ref: LLVMTypeRef?) : Type {
   public actual override fun toString(): String = printToString()
 }
 
-public actual class FunctionType(public override val ref: LLVMTypeRef?) : Type {
+public actual class FunctionType(public override val ref: LLVMTypeRef?) : Type() {
   public actual constructor(returnType: Type, params: List<Type>, isVarargs: Boolean) :
     this(
       llvm.LLVMFunctionType(
@@ -242,23 +234,17 @@ public actual class FunctionType(public override val ref: LLVMTypeRef?) : Type {
 
       (0 until size).map { Type(arguments[it]) }
     }
-
-  public actual override fun toString(): String = printToString()
 }
 
-public actual sealed class StubType : Type {
-  public actual override fun toString(): String = printToString()
-}
+public actual class VoidType(public override val ref: LLVMTypeRef?) : Type()
 
-public actual class VoidType(public override val ref: LLVMTypeRef?) : StubType()
+public actual class LabelType(public override val ref: LLVMTypeRef?) : Type()
 
-public actual class LabelType(public override val ref: LLVMTypeRef?) : StubType()
+public actual class MetadataType(public override val ref: LLVMTypeRef?) : Type()
 
-public actual class MetadataType(public override val ref: LLVMTypeRef?) : StubType()
+public actual class TokenType(public override val ref: LLVMTypeRef?) : Type()
 
-public actual class TokenType(public override val ref: LLVMTypeRef?) : StubType()
-
-public actual class X86MMXType(public override val ref: LLVMTypeRef?) : StubType()
+public actual class X86MMXType(public override val ref: LLVMTypeRef?) : Type()
 
 @Suppress("ComplexMethod")
 public fun Type(ref: LLVMTypeRef?): Type {

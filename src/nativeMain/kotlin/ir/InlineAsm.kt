@@ -17,8 +17,5 @@
 package org.plank.llvm4k.ir
 
 import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
 
-public actual class InlineAsm(public override val ref: LLVMValueRef?) : Value {
-  public override fun toString(): String = printToString()
-}
+public actual class InlineAsm(public override val ref: LLVMValueRef?) : Value()

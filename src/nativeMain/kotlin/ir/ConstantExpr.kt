@@ -18,11 +18,8 @@ package org.plank.llvm4k.ir
 
 import llvm.LLVMGetInstructionOpcode
 import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
 
-public actual sealed class ConstantExpr : Constant {
-  public override fun toString(): String = printToString()
-}
+public actual sealed class ConstantExpr : Constant()
 
 public actual class BinaryConstantExpr(public override val ref: LLVMValueRef?) :
   ConstantExpr()

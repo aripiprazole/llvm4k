@@ -16,11 +16,11 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed interface ConstantData : Constant
+public expect sealed class ConstantData : Constant
 
 public expect class ConstantAggregate : ConstantData
 
-public expect sealed interface ConstantDataSequential : ConstantData
+public expect sealed class ConstantDataSequential : ConstantData
 
 public expect class ConstantDataArray : ConstantDataSequential
 

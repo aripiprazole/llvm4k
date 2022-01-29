@@ -19,50 +19,47 @@ package org.plank.llvm4k.ir
 import kotlinx.cinterop.toKString
 import llvm.LLVMValueRef
 import org.plank.llvm4k.Module
-import org.plank.llvm4k.printToString
 
-public actual sealed interface GlobalValue : Constant, NamedValue {
-  public actual var linkage: Linkage
+public actual sealed class GlobalValue : Constant(), NamedValue {
+  public actual open var linkage: Linkage
     get(): Linkage = Linkage.byValue(llvm.LLVMGetLinkage(ref).value)
     set(value) {
       llvm.LLVMSetLinkage(ref, value.llvm)
     }
 
-  public actual var visibility: Visibility
+  public actual open var visibility: Visibility
     get(): Visibility = Visibility.byValue(llvm.LLVMGetVisibility(ref).value)
     set(value) {
       llvm.LLVMSetVisibility(ref, value.llvm)
     }
 
-  public actual var section: String?
+  public actual open var section: String?
     get(): String? = llvm.LLVMGetSection(ref)?.toKString()
     set(value) {
       llvm.LLVMSetSection(ref, value)
     }
 
-  public actual var dllStorageClass: DLLStorageClass
+  public actual open var dllStorageClass: DLLStorageClass
     get(): DLLStorageClass = DLLStorageClass.byValue(llvm.LLVMGetDLLStorageClass(ref))
     set(value) {
       llvm.LLVMSetDLLStorageClass(ref, value.llvm)
     }
 
-  public actual var unnamedAddr: UnnamedAddr
+  public actual open var unnamedAddr: UnnamedAddr
     get(): UnnamedAddr = UnnamedAddr.byValue(llvm.LLVMGetUnnamedAddress(ref))
     set(value) {
       llvm.LLVMSetUnnamedAddress(ref, value.llvm)
     }
 
-  public actual val module: Module get() = Module(llvm.LLVMGetGlobalParent(ref))
-  public actual val valueType: Type get() = Type(llvm.LLVMGlobalGetValueType(ref))
+  public actual open val module: Module get() = Module(llvm.LLVMGetGlobalParent(ref))
+  public actual open val valueType: Type get() = Type(llvm.LLVMGlobalGetValueType(ref))
 }
 
-public actual class GlobalAlias(public override val ref: LLVMValueRef?) : GlobalValue {
+public actual class GlobalAlias(public override val ref: LLVMValueRef?) : GlobalValue() {
   public actual var aliasee: Constant
     get(): Constant = Value(llvm.LLVMAliasGetAliasee(ref)) as? Constant
       ?: error("Aliasee expected to be a Constant")
     set(value) {
       llvm.LLVMAliasSetAliasee(ref, value.ref)
     }
-
-  public override fun toString(): String = printToString()
 }

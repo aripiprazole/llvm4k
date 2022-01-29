@@ -18,5 +18,4 @@ package org.plank.llvm4k.ir
 
 import llvm.LLVMValueRef
 
-public actual class MetadataAsValue(public override val ref: LLVMValueRef?) :
-  Value by ValueImpl(ref)
+public actual class MetadataAsValue(public override val ref: LLVMValueRef?) : Value()

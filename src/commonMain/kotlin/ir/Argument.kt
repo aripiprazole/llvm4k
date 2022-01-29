@@ -18,7 +18,4 @@ package org.plank.llvm4k.ir
 
 public expect class Argument : NamedValue {
   public val parent: Function
-  public override var name: String
-
-  public override fun toString(): String
 }

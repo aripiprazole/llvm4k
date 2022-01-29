@@ -17,11 +17,8 @@
 package org.plank.llvm4k.ir
 
 import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
 
-public actual sealed class Instruction : Value {
-  public actual override fun toString(): String = printToString()
-}
+public actual sealed class Instruction : Value()
 
 public actual class CallInst(public override val ref: LLVMValueRef?) : Instruction()
 
@@ -77,7 +74,7 @@ public actual class AtomicRMWInst(public override val ref: LLVMValueRef?) : Inst
 
 public actual class LandingPadInst(public override val ref: LLVMValueRef?) : Instruction()
 
-internal class InstructionImpl(override val ref: LLVMValueRef?) : Instruction()
+private class InstructionImpl(override val ref: LLVMValueRef?) : Instruction()
 
 @Suppress("ComplexMethod", "LongMethod")
 public fun Instruction(ref: LLVMValueRef?): Instruction {

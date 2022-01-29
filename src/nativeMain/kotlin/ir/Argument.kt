@@ -18,7 +18,6 @@ package org.plank.llvm4k.ir
 
 import llvm.LLVMValueRef
 
-public actual class Argument(public override val ref: LLVMValueRef?) :
-  NamedValue by NamedValueImpl(ref) {
+public actual class Argument(public override val ref: LLVMValueRef?) : Value(), NamedValue {
   public actual val parent: Function get() = Function(llvm.LLVMGetParamParent(ref))
 }

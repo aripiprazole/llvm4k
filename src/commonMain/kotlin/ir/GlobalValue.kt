@@ -18,7 +18,7 @@ package org.plank.llvm4k.ir
 
 import org.plank.llvm4k.Module
 
-public expect sealed interface GlobalValue : Constant, NamedValue {
+public expect sealed class GlobalValue : Constant, NamedValue {
   public open var linkage: Linkage
   public open var visibility: Visibility
   public open var section: String?

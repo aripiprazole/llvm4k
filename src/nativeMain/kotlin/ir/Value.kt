@@ -22,19 +22,19 @@ import llvm.LLVMValueRef
 import org.plank.llvm4k.Owner
 import org.plank.llvm4k.printToString
 
-public actual sealed interface Value : Owner<LLVMValueRef> {
-  public actual val type: Type get() = Type(llvm.LLVMTypeOf(ref))
-  public actual val kind: Kind get() = Kind.byValue(llvm.LLVMGetValueKind(ref).value)
+public actual sealed class Value : Owner<LLVMValueRef> {
+  public actual open val type: Type get() = Type(llvm.LLVMTypeOf(ref))
+  public actual open val kind: Kind get() = Kind.byValue(llvm.LLVMGetValueKind(ref).value)
 
-  public actual val isConstant: Boolean get() = llvm.LLVMIsConstant(ref) == 1
-  public actual val isUndef: Boolean get() = llvm.LLVMIsUndef(ref) == 1
-  public actual val asBasicBlock: BasicBlock get() = BasicBlock(llvm.LLVMValueAsBasicBlock(ref))
+  public actual open val isConstant: Boolean get() = llvm.LLVMIsConstant(ref) == 1
+  public actual open val isUndef: Boolean get() = llvm.LLVMIsUndef(ref) == 1
+  public actual open val asBasicBlock: BasicBlock get() = BasicBlock(llvm.LLVMValueAsBasicBlock(ref))
 
-  public actual fun replace(other: Value) {
+  public actual open fun replace(other: Value) {
     llvm.LLVMReplaceAllUsesWith(ref, other.ref)
   }
 
-  public actual override fun toString(): String
+  public actual override fun toString(): String = printToString()
 
   public actual enum class Kind(public val llvm: LLVMValueKind) {
     Argument(LLVMValueKind.LLVMArgumentValueKind),
@@ -82,20 +82,12 @@ public actual sealed interface Value : Owner<LLVMValueRef> {
   }
 }
 
-public actual sealed interface NamedValue : Value {
+public actual interface NamedValue : Owner<LLVMValueRef> {
   public actual var name: String
     get(): String = llvm.LLVMGetValueName(ref)!!.toKString()
     set(value) {
       llvm.LLVMSetValueName(ref, value)
     }
-}
-
-internal class ValueImpl(override val ref: LLVMValueRef?) : Value {
-  override fun toString(): String = printToString()
-}
-
-internal class NamedValueImpl(override val ref: LLVMValueRef?) : NamedValue {
-  override fun toString(): String = printToString()
 }
 
 @Suppress("ComplexMethod")

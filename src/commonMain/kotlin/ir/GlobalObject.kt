@@ -16,7 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed interface GlobalObject : GlobalValue
+public expect sealed class GlobalObject : GlobalValue
 
 public expect class GlobalIFunc : GlobalObject {
   public var resolver: Function?

@@ -16,13 +16,6 @@
 
 package org.plank.llvm4k.ir
 
-import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
-
-public actual sealed interface Constant : User {
-  public actual val isNullValue: Boolean get() = llvm.LLVMIsNull(ref) == 1
-}
-
-internal class ConstantImpl(override val ref: LLVMValueRef?) : Constant {
-  override fun toString(): String = printToString()
+public actual abstract class Constant : User() {
+  public actual open val isNullValue: Boolean get() = llvm.LLVMIsNull(ref) == 1
 }

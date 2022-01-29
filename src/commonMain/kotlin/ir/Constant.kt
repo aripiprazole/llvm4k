@@ -16,6 +16,6 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed interface Constant : User {
+public expect abstract class Constant : User {
   public open val isNullValue: Boolean
 }
