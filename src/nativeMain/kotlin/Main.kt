@@ -16,10 +16,44 @@
 
 package org.plank.llvm4k
 
-import kotlinx.cinterop.toKString
+import org.plank.llvm4k.ir.AddrSpace
+import org.plank.llvm4k.ir.CallingConv
+import org.plank.llvm4k.ir.FunctionType
+import org.plank.llvm4k.ir.Linkage
 
 public fun main() {
-  val context = llvm.LLVMContextCreate()
-  val module = llvm.LLVMModuleCreateWithNameInContext("Test module", context)
-  println(llvm.LLVMPrintModuleToString(module)!!.toKString())
+  llvm.LLVMInitializeNativeAsmPrinter()
+  llvm.LLVMInitializeNativeAsmParser()
+
+  val context = Context()
+  val module = context.createModule("test")
+
+  val builder = context.createIRBuilder()
+
+  val printf =
+    FunctionType(context.void, context.i8.pointer(AddrSpace.Generic), isVarargs = true)
+      .let { module.addFunction("printf", it) }
+      .apply {
+        callingConv = CallingConv.C
+        linkage = Linkage.External
+      }
+
+  context.createNamedStruct("Person") {
+    elements = listOf(context.i8.pointer(AddrSpace.Generic), context.i32)
+  }
+
+  val main = FunctionType(context.void).let { module.addFunction("main", it) }.apply {
+    builder.apply {
+      val message by createGlobalString("Hello, world")
+
+      positionAfter(context.createBasicBlock("entry").also(::appendBasicBlock))
+
+      createCall(printf, message)
+      createRetVoid()
+    }
+  }
+
+  val engine = module.createJITExecutionEngine(OptimizationLevel.None)
+
+  engine.runFunction(main)
 }
