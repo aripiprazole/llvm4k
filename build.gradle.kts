@@ -66,7 +66,7 @@ val hostOs: String = System.getProperty("os.name")
 val isMingwX64: Boolean = hostOs.startsWith("Windows")
 
 fun locateLlvmConfig(): File {
-  return System.getenv("PATH").split(":")
+  return System.getenv("PATH").split(File.pathSeparatorChar)
     .map { path ->
       if (path.startsWith("'") || path.startsWith("\"")) {
         path.substring(1, path.length - 1)
