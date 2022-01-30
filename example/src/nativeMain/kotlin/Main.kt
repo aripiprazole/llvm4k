@@ -14,14 +14,16 @@
  *    limitations under the License.
  */
 
-package org.plank.llvm4k
+package org.plank.llvm4k.example
 
+import org.plank.llvm4k.Context
+import org.plank.llvm4k.OptimizationLevel
 import org.plank.llvm4k.ir.AddrSpace
 import org.plank.llvm4k.ir.CallingConv
 import org.plank.llvm4k.ir.FunctionType
 import org.plank.llvm4k.ir.Linkage
 
-public fun main() {
+fun main() {
   llvm.LLVMInitializeNativeAsmPrinter()
   llvm.LLVMInitializeNativeAsmParser()
 

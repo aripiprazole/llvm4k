@@ -8,12 +8,8 @@ headers = \
 
 headerFilter = llvm-c/* llvm-c/**/*
 
-strictEnums = LLVMIntPredicate LLVMOpcode LLVMDLLStorageClass LLVMCallConv LLVMThreadLocalMode LLVMAtomicOrdering
+strictEnums = LLVMIntPredicate LLVMRealPredicate LLVMOpcode LLVMDLLStorageClass LLVMCallConv LLVMThreadLocalMode LLVMAtomicOrdering
 
-compilerOpts.linux = -I/usr/lib/llvm-13/include \
-    -shared -fPIC \
-    -std=c99 -pedantic
+linkerOpts.linux = -L%LLVM_LIB% -lLLVM-13
 
-linkerOpts.linux = -l/usr/lib/llvm-13/lib/libLLVM-13.so
-
-libraryPaths.linux = /usr/lib/llvm-13/lib
+compilerOpts.linux = -shared -fPIC -std=c99 -pedantic

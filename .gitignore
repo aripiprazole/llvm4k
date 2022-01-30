@@ -63,3 +63,5 @@ dist/
 *.log
 
 kotlin-js-store
+
+local.properties

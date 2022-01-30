@@ -25,3 +25,5 @@ pluginManagement {
     gradlePluginPortal()
   }
 }
+
+include("example")
