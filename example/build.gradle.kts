@@ -14,12 +14,63 @@
  *    limitations under the License.
  */
 
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.Properties
+
 plugins {
   kotlin("multiplatform")
 }
 
+val localProperties: Properties = rootProject.file("local.properties").let { file ->
+  val properties = Properties()
+
+  if (file.exists()) {
+    properties.load(file.inputStream())
+  }
+
+  properties
+}
+
 val hostOs: String = System.getProperty("os.name")
 val isMingwX64: Boolean = hostOs.startsWith("Windows")
+
+fun locateLlvmConfig(): File {
+  return System.getenv("PATH").split(File.pathSeparatorChar)
+    .map { path ->
+      if (path.startsWith("'") || path.startsWith("\"")) {
+        path.substring(1, path.length - 1)
+      } else {
+        path
+      }
+    }
+    .map(Paths::get)
+    .singleOrNull { path -> Files.exists(path.resolve("llvm-config")) }
+    ?.resolve("llvm-config")
+    ?.toFile()
+    ?: error("No suitable version of LLVM was found.")
+}
+
+val llvmConfig = localProperties.getProperty("llvm.config")?.let(::File)
+  ?: System.getenv("LLVM4K_CONFIG")?.let(::File)
+  ?: locateLlvmConfig()
+
+fun cmd(vararg args: String): String {
+  val command = "${llvmConfig.absolutePath} ${args.joinToString(" ")}"
+  val process = Runtime.getRuntime().exec(command)
+  val output = process.inputStream.bufferedReader().readText()
+
+  val exitCode = process.waitFor()
+  if (exitCode != 0) {
+    error("Command `$command` failed with status code: $exitCode")
+  }
+
+  return output.replace("\n", "")
+}
+
+fun String.absolutePath(): String {
+  return Paths.get(this).toAbsolutePath().toString().replace("\n", "")
+}
 
 kotlin {
   val nativeTarget = when {
@@ -32,6 +83,10 @@ kotlin {
   nativeTarget.apply {
     binaries {
       executable {
+        linkerOpts.addAll(cmd("--ldflags").split(" ").filter { it.isNotBlank() })
+        linkerOpts.addAll(cmd("--system-libs").split(" ").filter { it.isNotBlank() })
+        linkerOpts.addAll(cmd("--libs").split(" ").filter { it.isNotBlank() })
+
         entryPoint = "org.plank.llvm4k.example.main"
       }
     }

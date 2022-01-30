@@ -207,8 +207,6 @@ public actual class FloatType(public override val ref: LLVMTypeRef?) : Type() {
   public actual fun getConstant(value: Double): ConstantFP {
     return ConstantFP(llvm.LLVMConstReal(ref, value))
   }
-
-  public actual override fun toString(): String = printToString()
 }
 
 public actual class FunctionType(public override val ref: LLVMTypeRef?) : Type() {

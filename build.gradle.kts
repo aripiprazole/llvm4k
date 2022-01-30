@@ -82,7 +82,9 @@ fun locateLlvmConfig(): File {
     ?: error("No suitable version of LLVM was found.")
 }
 
-val llvmConfig = localProperties.getProperty("llvm.config")?.let(::File) ?: locateLlvmConfig()
+val llvmConfig = localProperties.getProperty("llvm.config")?.let(::File)
+  ?: System.getenv("LLVM4K_CONFIG")?.let(::File)
+  ?: locateLlvmConfig()
 
 fun cmd(vararg args: String): String {
   val command = "${llvmConfig.absolutePath} ${args.joinToString(" ")}"
@@ -94,7 +96,7 @@ fun cmd(vararg args: String): String {
     error("Command `$command` failed with status code: $exitCode")
   }
 
-  return output
+  return output.replace("\n", "")
 }
 
 fun String.absolutePath(): String {
@@ -131,14 +133,6 @@ configure<KotlinMultiplatformExtension> {
     val main by compilations.getting
     val llvm by main.cinterops.creating {
       includeDirs(cmd("--includedir").absolutePath())
-
-      defFile = buildDir.resolve("llvm-13.def").apply {
-        if (isDirectory) delete()
-        if (exists()) delete()
-        defFile.copyTo(this)
-
-        writeText(readText().replace("%LLVM_LIB%", cmd("--libdir").absolutePath()))
-      }
     }
   }
 

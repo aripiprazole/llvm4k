@@ -1,0 +1,30 @@
+on: push
+
+jobs:
+  release:
+    name: Publish to artifactory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libncurses5-dev && sudo apt-get install -y libtinfo-dev
+
+      - name: Install LLVM
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 13
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 16
+          distribution: 'adopt'
+
+      - name: Build gradle
+        run: ./gradlew example:runDebugExecutableNative
+        env:
+          LLVM4K_CONFIG: /usr/lib/llvm-13/bin/llvm-config
+
