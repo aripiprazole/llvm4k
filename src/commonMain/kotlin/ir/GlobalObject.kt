@@ -26,8 +26,6 @@ public expect class GlobalIFunc : GlobalObject {
   public fun erase()
 
   public fun delete()
-
-  public override fun toString(): String
 }
 
 public expect class GlobalVariable : GlobalObject {
@@ -37,8 +35,6 @@ public expect class GlobalVariable : GlobalObject {
   public var externallyInitialized: Boolean
 
   public fun delete()
-
-  public override fun toString(): String
 }
 
 public expect class Function : GlobalObject {
@@ -64,6 +60,4 @@ public expect class Function : GlobalObject {
   public fun delete()
 
   public operator fun invoke(builder: Function.() -> Unit = {}): Function
-
-  public override fun toString(): String
 }

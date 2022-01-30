@@ -80,8 +80,6 @@ public expect sealed class CompositeType : Type {
   public abstract val count: Int
   public val elements: List<Type>
   public val contained: Type
-
-  public override fun toString(): String
 }
 
 public expect sealed class VectorType : CompositeType {
@@ -109,8 +107,6 @@ public expect class IntegerType : Type {
   public fun getConstant(value: Int, unsigned: Boolean = false): ConstantInt
 
   public fun getConstant(value: Long, unsigned: Boolean = false): ConstantInt
-
-  public override fun toString(): String
 }
 
 public expect class FloatType : Type {
@@ -120,8 +116,6 @@ public expect class FloatType : Type {
   public fun getConstant(value: Float): ConstantFP
 
   public fun getConstant(value: Double): ConstantFP
-
-  public override fun toString(): String
 }
 
 public expect class FunctionType(
@@ -132,8 +126,6 @@ public expect class FunctionType(
   public val returnType: Type
   public val isVarargs: Boolean
   public val parameters: List<Type>
-
-  public override fun toString(): String
 }
 
 public fun FunctionType(

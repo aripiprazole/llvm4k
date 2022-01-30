@@ -23,7 +23,6 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.toKString
 import llvm.LLVMBasicBlockRef
 import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
 import org.plank.llvm4k.toInt
 
 public actual sealed class GlobalObject : GlobalValue()
@@ -70,8 +69,6 @@ public actual class GlobalVariable(public override val ref: LLVMValueRef?) : Glo
     set(value) {
       llvm.LLVMSetExternallyInitialized(ref, value.toInt())
     }
-
-  public actual override fun toString(): String = printToString()
 
   public actual fun delete() {
     llvm.LLVMDeleteGlobal(ref)
@@ -150,6 +147,4 @@ public actual class Function(public override val ref: LLVMValueRef?) : GlobalObj
   public actual fun delete() {
     llvm.LLVMDeleteFunction(ref)
   }
-
-  public actual override fun toString(): String = printToString()
 }

@@ -26,6 +26,7 @@ import java.util.Properties
 plugins {
   alias(libs.plugins.kotlin)
   alias(libs.plugins.detekt)
+  alias(libs.plugins.ktlint)
   `maven-publish`
 }
 
@@ -103,19 +104,19 @@ fun String.absolutePath(): String {
 configure<KotlinMultiplatformExtension> {
   explicitApi()
 
-//  jvm {
-//    withJava()
-//    compilations.all {
-//      kotlinOptions.jvmTarget = "17"
-//    }
-//    testRuns["test"].executionTask.configure {
-//      useJUnitPlatform()
-//    }
-//  }
-//
-//  js(BOTH) {
-//    nodejs()
-//  }
+  jvm {
+    withJava()
+    compilations.all {
+      kotlinOptions.jvmTarget = "17"
+    }
+    testRuns["test"].executionTask.configure {
+      useJUnitPlatform()
+    }
+  }
+
+  js(IR) {
+    nodejs()
+  }
 
   val hostOs = System.getProperty("os.name")
   val isMingwX64 = hostOs.startsWith("Windows")

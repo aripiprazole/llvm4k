@@ -16,9 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed class Instruction : Value {
-  public override fun toString(): String
-}
+public expect sealed class Instruction : Value
 
 public expect class CallInst : Instruction
 

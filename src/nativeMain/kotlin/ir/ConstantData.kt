@@ -22,7 +22,6 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import llvm.LLVMValueRef
-import org.plank.llvm4k.printToString
 
 public actual sealed class ConstantData : Constant()
 
@@ -46,28 +45,18 @@ public actual class ConstantFP(public override val ref: LLVMValueRef?) : Constan
     }
 
   public actual val value: Float get() = realValue.value
-
-  public override fun toString(): String = printToString()
 }
 
 public actual class ConstantInt(public override val ref: LLVMValueRef?) : ConstantData() {
   public actual val zExtValue: Long get() = llvm.LLVMConstIntGetZExtValue(ref).toLong()
   public actual val sExtValue: Long get() = llvm.LLVMConstIntGetSExtValue(ref)
-
-  public override fun toString(): String = printToString()
 }
 
-public actual class ConstantPointerNull(public override val ref: LLVMValueRef?) : ConstantData() {
-  public override fun toString(): String = printToString()
-}
+public actual class ConstantPointerNull(public override val ref: LLVMValueRef?) : ConstantData()
 
-public actual class ConstantTokenNone(public override val ref: LLVMValueRef?) : ConstantData() {
-  public override fun toString(): String = printToString()
-}
+public actual class ConstantTokenNone(public override val ref: LLVMValueRef?) : ConstantData()
 
-public actual sealed class UndefValue : ConstantData() {
-  public override fun toString(): String = printToString()
-}
+public actual sealed class UndefValue : ConstantData()
 
 private class UndefValueImpl(override val ref: LLVMValueRef?) : UndefValue()
 

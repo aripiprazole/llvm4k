@@ -25,6 +25,7 @@ import org.plank.llvm4k.ir.StructType
 import org.plank.llvm4k.ir.TokenType
 import org.plank.llvm4k.ir.VoidType
 import org.plank.llvm4k.ir.X86MMXType
+import kotlin.js.JsName
 
 public expect interface Context : Disposable {
   public val void: VoidType
@@ -59,4 +60,5 @@ public expect interface Context : Disposable {
 
 public expect object GlobalContext : Context
 
+@JsName("Context0")
 public expect fun Context(): Context
