@@ -17,7 +17,38 @@
 package org.plank.llvm4k
 
 import kotlinx.cinterop.toCValues
-import org.plank.llvm4k.ir.* // ktlint-disable no-unused-imports
+import org.plank.llvm4k.ir.AddrSpace
+import org.plank.llvm4k.ir.AllocaInst
+import org.plank.llvm4k.ir.AtomicCmpXchgInst
+import org.plank.llvm4k.ir.AtomicOrdering
+import org.plank.llvm4k.ir.AtomicRMWBinOp
+import org.plank.llvm4k.ir.AtomicRMWInst
+import org.plank.llvm4k.ir.BasicBlock
+import org.plank.llvm4k.ir.BranchInst
+import org.plank.llvm4k.ir.CallInst
+import org.plank.llvm4k.ir.CatchPadInst
+import org.plank.llvm4k.ir.CatchReturnInst
+import org.plank.llvm4k.ir.CatchSwitchInst
+import org.plank.llvm4k.ir.CleanupPadInst
+import org.plank.llvm4k.ir.CleanupReturnInst
+import org.plank.llvm4k.ir.FenceInst
+import org.plank.llvm4k.ir.Function
+import org.plank.llvm4k.ir.FunctionType
+import org.plank.llvm4k.ir.GlobalVariable
+import org.plank.llvm4k.ir.IndirectBrInst
+import org.plank.llvm4k.ir.IntPredicate
+import org.plank.llvm4k.ir.InvokeInst
+import org.plank.llvm4k.ir.LandingPadInst
+import org.plank.llvm4k.ir.LoadInst
+import org.plank.llvm4k.ir.Opcode
+import org.plank.llvm4k.ir.RealPredicate
+import org.plank.llvm4k.ir.ResumeInst
+import org.plank.llvm4k.ir.ReturnInst
+import org.plank.llvm4k.ir.StoreInst
+import org.plank.llvm4k.ir.SwitchInst
+import org.plank.llvm4k.ir.Type
+import org.plank.llvm4k.ir.UnreachableInst
+import org.plank.llvm4k.ir.Value
 import kotlin.properties.ReadOnlyProperty
 
 internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {

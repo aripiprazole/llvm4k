@@ -1,7 +1,12 @@
-on: push
+on:
+  push:
+  release:
+    types:
+      - created
 
 jobs:
   release:
+    environment: Publish
     name: Publish to artifactory
     runs-on: ubuntu-latest
     steps:
@@ -23,8 +28,10 @@ jobs:
           java-version: 16
           distribution: 'adopt'
 
-      - name: Build gradle
-        run: ./gradlew example:runDebugExecutableNative
+      - name: Build and publish to artifactory
+        run: ./gradlew artifactoryPublish --no-configure-on-demand --no-daemon
         env:
           LLVM4K_CONFIG: /usr/lib/llvm-13/bin/llvm-config
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
