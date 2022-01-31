@@ -19,6 +19,7 @@
 import io.gitlab.arturbosch.detekt.DetektPlugin
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import java.lang.System.getenv
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Properties
@@ -27,6 +28,7 @@ plugins {
   alias(libs.plugins.kotlin)
   alias(libs.plugins.detekt)
   alias(libs.plugins.ktlint)
+  alias(libs.plugins.artifactory)
   `maven-publish`
 }
 
@@ -38,7 +40,7 @@ allprojects {
   apply<DetektPlugin>()
 
   group = "org.plank.llvm4k"
-  version = "1.0-SNAPSHOT"
+  version = "dev"
 
   repositories {
     mavenCentral()
@@ -63,11 +65,36 @@ val localProperties: Properties = rootProject.file("local.properties").let { fil
   properties
 }
 
+val artifactoryUsername: String = localProperties.getProperty("artifactory.username")
+  ?: getenv("ARTIFACTORY_USERNAME").orEmpty()
+
+val artifactoryPassword: String = localProperties.getProperty("artifactory.password")
+  ?: getenv("ARTIFACTORY_PASSWORD").orEmpty()
+
 val hostOs: String = System.getProperty("os.name")
 val isMingwX64: Boolean = hostOs.startsWith("Windows")
 
+artifactory {
+  setContextUrl("https://plank.jfrog.io/artifactory")
+
+  publish {
+    repository {
+      setRepoKey("default-gradle-dev-local")
+      setUsername(artifactoryUsername)
+      setPassword(artifactoryPassword)
+      setMavenCompatible(true)
+    }
+
+    defaults {
+      setPublishArtifacts(true)
+      setPublishPom(true)
+      publications("jvm", "native", "js", "kotlinMultiplatform")
+    }
+  }
+}
+
 fun locateLlvmConfig(): File {
-  return System.getenv("PATH").split(File.pathSeparatorChar)
+  return getenv("PATH").split(File.pathSeparatorChar)
     .map { path ->
       if (path.startsWith("'") || path.startsWith("\"")) {
         path.substring(1, path.length - 1)
@@ -82,7 +109,9 @@ fun locateLlvmConfig(): File {
     ?: error("No suitable version of LLVM was found.")
 }
 
-val llvmConfig = localProperties.getProperty("llvm.config")?.let(::File) ?: locateLlvmConfig()
+val llvmConfig = localProperties.getProperty("llvm.config")?.let(::File)
+  ?: getenv("LLVM4K_CONFIG")?.let(::File)
+  ?: locateLlvmConfig()
 
 fun cmd(vararg args: String): String {
   val command = "${llvmConfig.absolutePath} ${args.joinToString(" ")}"
@@ -94,7 +123,7 @@ fun cmd(vararg args: String): String {
     error("Command `$command` failed with status code: $exitCode")
   }
 
-  return output
+  return output.replace("\n", "")
 }
 
 fun String.absolutePath(): String {
@@ -131,14 +160,6 @@ configure<KotlinMultiplatformExtension> {
     val main by compilations.getting
     val llvm by main.cinterops.creating {
       includeDirs(cmd("--includedir").absolutePath())
-
-      defFile = buildDir.resolve("llvm-13.def").apply {
-        if (isDirectory) delete()
-        if (exists()) delete()
-        defFile.copyTo(this)
-
-        writeText(readText().replace("%LLVM_LIB%", cmd("--libdir").absolutePath()))
-      }
     }
   }
 

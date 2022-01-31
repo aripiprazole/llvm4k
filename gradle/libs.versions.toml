@@ -53,3 +53,7 @@ version = "10.2.1"
 [plugins.detekt]
 id = "io.gitlab.arturbosch.detekt"
 version = "1.19.0"
+
+[plugins.artifactory]
+id = "com.jfrog.artifactory"
+version = "4.25.2"

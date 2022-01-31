@@ -10,6 +10,4 @@ headerFilter = llvm-c/* llvm-c/**/*
 
 strictEnums = LLVMIntPredicate LLVMRealPredicate LLVMOpcode LLVMDLLStorageClass LLVMCallConv LLVMThreadLocalMode LLVMAtomicOrdering
 
-linkerOpts.linux = -L%LLVM_LIB% -lLLVM-13
-
 compilerOpts.linux = -shared -fPIC -std=c99 -pedantic
