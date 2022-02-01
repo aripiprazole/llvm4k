@@ -61,3 +61,9 @@ public expect class AtomicCmpXchgInst : Instruction
 public expect class AtomicRMWInst : Instruction
 
 public expect class LandingPadInst : Instruction
+
+public expect class PhiInst : Instruction {
+  public fun addIncoming(value: Value, block: BasicBlock)
+
+  public fun addIncoming(vararg incoming: Pair<Value, BasicBlock>)
+}

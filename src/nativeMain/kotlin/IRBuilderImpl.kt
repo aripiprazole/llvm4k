@@ -41,6 +41,7 @@ import org.plank.llvm4k.ir.InvokeInst
 import org.plank.llvm4k.ir.LandingPadInst
 import org.plank.llvm4k.ir.LoadInst
 import org.plank.llvm4k.ir.Opcode
+import org.plank.llvm4k.ir.PhiInst
 import org.plank.llvm4k.ir.RealPredicate
 import org.plank.llvm4k.ir.ResumeInst
 import org.plank.llvm4k.ir.ReturnInst
@@ -609,6 +610,10 @@ internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
 
   override fun createFreeze(value: Value, name: String?): Value {
     return Value(llvm.LLVMBuildFreeze(ref, value.ref, name ?: ""))
+  }
+
+  override fun createPhi(type: Type, name: String?): PhiInst {
+    return PhiInst(llvm.LLVMBuildPhi(ref, type.ref, name ?: ""))
   }
 
   override fun close() {

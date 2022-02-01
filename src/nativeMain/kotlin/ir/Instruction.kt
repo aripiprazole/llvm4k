@@ -16,6 +16,8 @@
 
 package org.plank.llvm4k.ir
 
+import kotlinx.cinterop.cValuesOf
+import kotlinx.cinterop.toCValues
 import llvm.LLVMValueRef
 
 public actual sealed class Instruction : Value()
@@ -76,6 +78,21 @@ public actual class LandingPadInst(public override val ref: LLVMValueRef?) : Ins
 
 private class InstructionImpl(override val ref: LLVMValueRef?) : Instruction()
 
+public actual class PhiInst(public override val ref: LLVMValueRef?) : Instruction() {
+  public actual fun addIncoming(value: Value, block: BasicBlock) {
+    llvm.LLVMAddIncoming(ref, cValuesOf(value.ref), cValuesOf(block.ref), 1u)
+  }
+
+  public actual fun addIncoming(vararg incoming: Pair<Value, BasicBlock>) {
+    llvm.LLVMAddIncoming(
+      ref,
+      incoming.map { it.first.ref }.toCValues(),
+      incoming.map { it.second.ref }.toCValues(),
+      incoming.size.toUInt(),
+    )
+  }
+}
+
 @Suppress("ComplexMethod", "LongMethod")
 public fun Instruction(ref: LLVMValueRef?): Instruction {
   return when (Opcode.byValue(llvm.LLVMGetInstructionOpcode(ref).value)) {
@@ -98,6 +115,7 @@ public fun Instruction(ref: LLVMValueRef?): Instruction {
     Opcode.CatchPad -> CatchPadInst(ref)
     Opcode.CleanupPad -> CleanupPadInst(ref)
     Opcode.CatchSwitch -> CatchSwitchInst(ref)
+    Opcode.PHI -> PhiInst(ref)
     else -> InstructionImpl(ref)
   }
 }

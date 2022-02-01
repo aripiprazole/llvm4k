@@ -42,6 +42,7 @@ import org.plank.llvm4k.ir.InvokeInst
 import org.plank.llvm4k.ir.LandingPadInst
 import org.plank.llvm4k.ir.LoadInst
 import org.plank.llvm4k.ir.Opcode
+import org.plank.llvm4k.ir.PhiInst
 import org.plank.llvm4k.ir.RealPredicate
 import org.plank.llvm4k.ir.ResumeInst
 import org.plank.llvm4k.ir.ReturnInst
@@ -422,4 +423,6 @@ public interface IRBuilder : Disposable {
   public fun createLandingPad(type: Type, numClauses: Int, name: String? = null): LandingPadInst
 
   public fun createFreeze(value: Value, name: String? = null): Value
+
+  public fun createPhi(type: Type, name: String? = null): PhiInst
 }

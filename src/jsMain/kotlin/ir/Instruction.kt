@@ -64,3 +64,11 @@ public actual class AtomicCmpXchgInst : Instruction()
 public actual class AtomicRMWInst : Instruction()
 
 public actual class LandingPadInst : Instruction()
+
+public actual class PhiInst : Instruction() {
+  public actual fun addIncoming(value: Value, block: BasicBlock) {
+  }
+
+  public actual fun addIncoming(vararg incoming: Pair<Value, BasicBlock>) {
+  }
+}
