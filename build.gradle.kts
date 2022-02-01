@@ -71,6 +71,9 @@ val artifactoryUsername: String = localProperties.getProperty("artifactory.usern
 val artifactoryPassword: String = localProperties.getProperty("artifactory.password")
   ?: getenv("ARTIFACTORY_PASSWORD").orEmpty()
 
+val hostOs: String = System.getProperty("os.name")
+val isMingwX64: Boolean = hostOs.startsWith("Windows")
+
 artifactory {
   setContextUrl("https://plank.jfrog.io/artifactory")
 
@@ -85,7 +88,7 @@ artifactory {
     defaults {
       setPublishArtifacts(true)
       setPublishPom(true)
-      publications("jvm", "linuxX64", "mingwX64", "js", "kotlinMultiplatform")
+      publications("jvm", "native", "js", "kotlinMultiplatform")
     }
   }
 }
@@ -144,14 +147,16 @@ configure<KotlinMultiplatformExtension> {
     nodejs()
   }
 
-  linuxX64("linuxX64") {
-    val main by compilations.getting
-    val llvm by main.cinterops.creating {
-      includeDirs(cmd("--includedir").absolutePath())
-    }
+  val hostOs = System.getProperty("os.name")
+  val isMingwX64 = hostOs.startsWith("Windows")
+  val nativeTarget = when {
+    hostOs == "Mac OS X" -> macosX64("native")
+    hostOs == "Linux" -> linuxX64("native")
+    isMingwX64 -> mingwX64("native")
+    else -> error("Host OS is not supported in Kotlin/Native.")
   }
 
-  mingwX64("mingwX64") {
+  nativeTarget.apply {
     val main by compilations.getting
     val llvm by main.cinterops.creating {
       includeDirs(cmd("--includedir").absolutePath())
@@ -159,20 +164,10 @@ configure<KotlinMultiplatformExtension> {
   }
 
   sourceSets {
-    val commonMain by getting
-
     val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
       }
-    }
-
-    val linuxX64Main by getting {
-      kotlin.srcDir("src/nativeMain/kotlin")
-    }
-
-    val mingwX64Main by getting {
-      kotlin.srcDir("src/nativeMain/kotlin")
     }
   }
 }
