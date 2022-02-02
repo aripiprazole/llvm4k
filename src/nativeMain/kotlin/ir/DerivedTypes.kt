@@ -118,8 +118,8 @@ public actual class StructType(public override val ref: LLVMTypeRef?) : Type() {
     vararg elements: Constant,
     isPacked: Boolean,
   ): ConstantAggregate {
-    val ref = when {
-      name != null -> llvm.LLVMConstStructInContext(
+    val ref = when (name) {
+      null -> llvm.LLVMConstStructInContext(
         context.ref,
         elements.map { it.ref }.toCValues(),
         elements.size.toUInt(),
