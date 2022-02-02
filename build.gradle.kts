@@ -88,7 +88,7 @@ artifactory {
     defaults {
       setPublishArtifacts(true)
       setPublishPom(true)
-      publications("jvm", "native", "js", "kotlinMultiplatform")
+      publications("jvm", "linuxX64", "mingwX64", "native", "js", "kotlinMultiplatform")
     }
   }
 }
@@ -147,16 +147,10 @@ configure<KotlinMultiplatformExtension> {
     nodejs()
   }
 
-  val hostOs = System.getProperty("os.name")
-  val isMingwX64 = hostOs.startsWith("Windows")
-  val nativeTarget = when {
-    hostOs == "Mac OS X" -> macosX64("native")
-    hostOs == "Linux" -> linuxX64("native")
-    isMingwX64 -> mingwX64("native")
-    else -> error("Host OS is not supported in Kotlin/Native.")
-  }
+  val linuxX64 = linuxX64("linuxX64")
+  val mingwX64 = mingwX64("mingwX64")
 
-  nativeTarget.apply {
+  configure(listOf(linuxX64, mingwX64)) {
     val main by compilations.getting
     val llvm by main.cinterops.creating {
       includeDirs(cmd("--includedir").absolutePath())
@@ -164,10 +158,28 @@ configure<KotlinMultiplatformExtension> {
   }
 
   sourceSets {
+    val commonMain by getting
     val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
       }
+    }
+
+    val linuxX64Main by getting
+    val linuxX64Test by getting
+
+    val mingwX64Main by getting
+    val mingwX64Test by getting
+
+    val nativeMain by creating {
+      dependsOn(commonMain)
+      linuxX64Main.dependsOn(this)
+      mingwX64Main.dependsOn(this)
+    }
+    val nativeTest by creating {
+      dependsOn(commonTest)
+      linuxX64Test.dependsOn(this)
+      mingwX64Main.dependsOn(this)
     }
   }
 }
