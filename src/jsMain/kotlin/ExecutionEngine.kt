@@ -23,6 +23,10 @@ public actual class ExecutionEngine : Disposable {
     TODO("Not yet implemented")
   }
 
+  public actual fun runFunctionAsMain(callee: Function, args: Array<String>): Int {
+    TODO("Not yet implemented")
+  }
+
   override fun close() {
     TODO("Not yet implemented")
   }

@@ -16,6 +16,8 @@
 
 package org.plank.llvm4k
 
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.toCValues
 import llvm.LLVMExecutionEngineRef
 import org.plank.llvm4k.ir.FloatType
@@ -26,14 +28,23 @@ public actual class ExecutionEngine(
   public override val ref: LLVMExecutionEngineRef?,
 ) : Disposable, Owner<LLVMExecutionEngineRef> {
   public actual fun runFunction(callee: Function, vararg args: GenericValue<*>): GenericValue<*> {
-    val ref =
-      llvm.LLVMRunFunction(ref, callee.ref, args.size.toUInt(), args.map { it.ref }.toCValues())
+    val ref = llvm.LLVMRunFunction(
+      ref, callee.ref, args.size.toUInt(), args.map { it.ref }.toCValues()
+    )
 
     return when (val returnType = callee.returnType) {
       is FloatType -> FloatValue(returnType, ref)
       is IntegerType -> IntegerValue(true, returnType, ref)
       else -> AnyValue(returnType, ref)
     }
+  }
+
+  public actual fun runFunctionAsMain(callee: Function, args: Array<String>): Int = memScoped {
+    llvm.LLVMRunFunctionAsMain(
+      ref, callee.ref, args.size.toUInt(),
+      args.toCStringArray(this),
+      emptyArray<String>().toCStringArray(this)
+    )
   }
 
   public override fun close() {

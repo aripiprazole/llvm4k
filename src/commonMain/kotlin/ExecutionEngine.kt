@@ -20,4 +20,6 @@ import org.plank.llvm4k.ir.Function
 
 public expect class ExecutionEngine : Disposable {
   public fun runFunction(callee: Function, vararg args: GenericValue<*>): GenericValue<*>
+
+  public fun runFunctionAsMain(callee: Function, args: Array<String>): Int
 }
