@@ -183,3 +183,13 @@ configure<KotlinMultiplatformExtension> {
     }
   }
 }
+
+afterEvaluate {
+  val compilation = kotlin.targets["metadata"].compilations["nativeMain"]
+
+  compilation.compileKotlinTask.doFirst {
+    compilation.compileDependencyFiles = compilation.compileDependencyFiles
+      .filterNot { it.absolutePath.endsWith("klib/common/stdlib") }
+      .let { files(it) }
+  }
+}
