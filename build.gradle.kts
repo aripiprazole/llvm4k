@@ -179,7 +179,7 @@ configure<KotlinMultiplatformExtension> {
     val nativeTest by creating {
       dependsOn(commonTest)
       linuxX64Test.dependsOn(this)
-      mingwX64Main.dependsOn(this)
+      mingwX64Test.dependsOn(this)
     }
   }
 }
