@@ -103,7 +103,7 @@ fun locateLlvmConfig(): File {
       }
     }
     .map(Paths::get)
-    .singleOrNull { path -> Files.exists(path.resolve("llvm-config")) }
+    .firstOrNull { path -> Files.exists(path.resolve("llvm-config")) }
     ?.resolve("llvm-config")
     ?.toFile()
     ?: error("No suitable version of LLVM was found.")
