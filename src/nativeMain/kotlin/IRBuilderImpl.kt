@@ -61,6 +61,16 @@ internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
     return this
   }
 
+  override fun createGlobalStringPtr(value: String): ReadOnlyProperty<Any?, GlobalVariable> {
+    return ReadOnlyProperty { _, property ->
+      createGlobalString(value, property.name)
+    }
+  }
+
+  override fun createGlobalStringPtr(value: String, name: String): GlobalVariable {
+    return GlobalVariable(llvm.LLVMBuildGlobalStringPtr(ref, value, name))
+  }
+
   override fun createGlobalString(value: String): ReadOnlyProperty<Any?, GlobalVariable> {
     return ReadOnlyProperty { _, property ->
       createGlobalString(value, property.name)

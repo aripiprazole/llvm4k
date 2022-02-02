@@ -58,6 +58,10 @@ public interface IRBuilder : Disposable {
 
   public fun positionAfter(block: BasicBlock): IRBuilder
 
+  public fun createGlobalStringPtr(value: String): ReadOnlyProperty<Any?, GlobalVariable>
+
+  public fun createGlobalStringPtr(value: String, name: String): GlobalVariable
+
   public fun createGlobalString(value: String): ReadOnlyProperty<Any?, GlobalVariable>
 
   public fun createGlobalString(value: String, name: String): GlobalVariable
