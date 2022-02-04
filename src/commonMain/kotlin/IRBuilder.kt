@@ -238,6 +238,19 @@ public interface IRBuilder : Disposable {
     name: String? = null,
   ): AllocaInst
 
+  public fun createMalloc(
+    type: Type,
+    addrSpace: AddrSpace = AddrSpace.Generic,
+    name: String? = null,
+  ): CallInst
+
+  public fun createArrayMalloc(
+    type: Type,
+    addrSpace: AddrSpace = AddrSpace.Generic,
+    value: Value,
+    name: String? = null,
+  ): CallInst
+
   public fun createLoad(ptr: Value, name: String? = null): LoadInst
 
   public fun createLoad(type: Type, ptr: Value, name: String? = null): LoadInst

@@ -88,7 +88,7 @@ artifactory {
     defaults {
       setPublishArtifacts(true)
       setPublishPom(true)
-      publications("jvm", "linuxX64", "mingwX64", "native", "js", "kotlinMultiplatform")
+      publications("jvm", "linuxX64", "mingwX64", "js", "kotlinMultiplatform")
     }
   }
 }

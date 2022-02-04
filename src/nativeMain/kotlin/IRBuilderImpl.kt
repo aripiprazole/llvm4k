@@ -340,6 +340,19 @@ internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
     return AllocaInst(llvm.LLVMBuildArrayAlloca(ref, type.ref, value.ref, name ?: ""))
   }
 
+  override fun createMalloc(type: Type, addrSpace: AddrSpace, name: String?): CallInst {
+    return CallInst(llvm.LLVMBuildMalloc(ref, type.ref, name ?: ""))
+  }
+
+  override fun createArrayMalloc(
+    type: Type,
+    addrSpace: AddrSpace,
+    value: Value,
+    name: String?
+  ): CallInst {
+    return CallInst(llvm.LLVMBuildArrayMalloc(ref, type.ref, value.ref, name ?: ""))
+  }
+
   override fun createLoad(ptr: Value, name: String?): LoadInst {
     return LoadInst(llvm.LLVMBuildLoad(ref, ptr.ref, name ?: ""))
   }
