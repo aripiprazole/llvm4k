@@ -18,6 +18,26 @@ package org.plank.llvm4k.ir
 
 import kotlinx.cinterop.cValuesOf
 import kotlinx.cinterop.toCValues
+import llvm.LLVMOpcode.LLVMAlloca
+import llvm.LLVMOpcode.LLVMAtomicCmpXchg
+import llvm.LLVMOpcode.LLVMAtomicRMW
+import llvm.LLVMOpcode.LLVMBr
+import llvm.LLVMOpcode.LLVMCall
+import llvm.LLVMOpcode.LLVMCatchPad
+import llvm.LLVMOpcode.LLVMCatchRet
+import llvm.LLVMOpcode.LLVMCatchSwitch
+import llvm.LLVMOpcode.LLVMCleanupPad
+import llvm.LLVMOpcode.LLVMFence
+import llvm.LLVMOpcode.LLVMIndirectBr
+import llvm.LLVMOpcode.LLVMInvoke
+import llvm.LLVMOpcode.LLVMLandingPad
+import llvm.LLVMOpcode.LLVMLoad
+import llvm.LLVMOpcode.LLVMPHI
+import llvm.LLVMOpcode.LLVMResume
+import llvm.LLVMOpcode.LLVMRet
+import llvm.LLVMOpcode.LLVMStore
+import llvm.LLVMOpcode.LLVMSwitch
+import llvm.LLVMOpcode.LLVMUnreachable
 import llvm.LLVMValueRef
 
 public actual sealed class Instruction : Value()
@@ -95,27 +115,27 @@ public actual class PhiInst(public override val ref: LLVMValueRef?) : Instructio
 
 @Suppress("ComplexMethod", "LongMethod")
 public fun Instruction(ref: LLVMValueRef?): Instruction {
-  return when (Opcode.byValue(llvm.LLVMGetInstructionOpcode(ref).value)) {
-    Opcode.Ret -> ReturnInst(ref)
-    Opcode.Br -> BranchInst(ref)
-    Opcode.Switch -> SwitchInst(ref)
-    Opcode.IndirectBr -> IndirectBrInst(ref)
-    Opcode.Invoke -> InvokeInst(ref)
-    Opcode.Unreachable -> UnreachableInst(ref)
-    Opcode.Alloca -> AllocaInst(ref)
-    Opcode.Load -> LoadInst(ref)
-    Opcode.Store -> StoreInst(ref)
-    Opcode.Call -> CallInst(ref)
-    Opcode.Fence -> FenceInst(ref)
-    Opcode.AtomicCmpXchg -> AtomicCmpXchgInst(ref)
-    Opcode.AtomicRMW -> AtomicRMWInst(ref)
-    Opcode.Resume -> ResumeInst(ref)
-    Opcode.LandingPad -> LandingPadInst(ref)
-    Opcode.CatchRet -> CatchReturnInst(ref)
-    Opcode.CatchPad -> CatchPadInst(ref)
-    Opcode.CleanupPad -> CleanupPadInst(ref)
-    Opcode.CatchSwitch -> CatchSwitchInst(ref)
-    Opcode.PHI -> PhiInst(ref)
+  return when (llvm.LLVMGetInstructionOpcode(ref)) {
+    LLVMRet -> ReturnInst(ref)
+    LLVMBr -> BranchInst(ref)
+    LLVMSwitch -> SwitchInst(ref)
+    LLVMIndirectBr -> IndirectBrInst(ref)
+    LLVMInvoke -> InvokeInst(ref)
+    LLVMUnreachable -> UnreachableInst(ref)
+    LLVMAlloca -> AllocaInst(ref)
+    LLVMLoad -> LoadInst(ref)
+    LLVMStore -> StoreInst(ref)
+    LLVMCall -> CallInst(ref)
+    LLVMFence -> FenceInst(ref)
+    LLVMAtomicCmpXchg -> AtomicCmpXchgInst(ref)
+    LLVMAtomicRMW -> AtomicRMWInst(ref)
+    LLVMResume -> ResumeInst(ref)
+    LLVMLandingPad -> LandingPadInst(ref)
+    LLVMCatchRet -> CatchReturnInst(ref)
+    LLVMCatchPad -> CatchPadInst(ref)
+    LLVMCleanupPad -> CleanupPadInst(ref)
+    LLVMCatchSwitch -> CatchSwitchInst(ref)
+    LLVMPHI -> PhiInst(ref)
     else -> InstructionImpl(ref)
   }
 }

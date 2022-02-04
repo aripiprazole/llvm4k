@@ -24,6 +24,26 @@ import kotlinx.cinterop.toCValues
 import kotlinx.cinterop.toKString
 import llvm.LLVMGetTypeContext
 import llvm.LLVMTypeKind
+import llvm.LLVMTypeKind.LLVMArrayTypeKind
+import llvm.LLVMTypeKind.LLVMBFloatTypeKind
+import llvm.LLVMTypeKind.LLVMDoubleTypeKind
+import llvm.LLVMTypeKind.LLVMFP128TypeKind
+import llvm.LLVMTypeKind.LLVMFloatTypeKind
+import llvm.LLVMTypeKind.LLVMFunctionTypeKind
+import llvm.LLVMTypeKind.LLVMHalfTypeKind
+import llvm.LLVMTypeKind.LLVMIntegerTypeKind
+import llvm.LLVMTypeKind.LLVMLabelTypeKind
+import llvm.LLVMTypeKind.LLVMMetadataTypeKind
+import llvm.LLVMTypeKind.LLVMPPC_FP128TypeKind
+import llvm.LLVMTypeKind.LLVMPointerTypeKind
+import llvm.LLVMTypeKind.LLVMScalableVectorTypeKind
+import llvm.LLVMTypeKind.LLVMStructTypeKind
+import llvm.LLVMTypeKind.LLVMTokenTypeKind
+import llvm.LLVMTypeKind.LLVMVectorTypeKind
+import llvm.LLVMTypeKind.LLVMVoidTypeKind
+import llvm.LLVMTypeKind.LLVMX86_AMXTypeKind
+import llvm.LLVMTypeKind.LLVMX86_FP80TypeKind
+import llvm.LLVMTypeKind.LLVMX86_MMXTypeKind
 import llvm.LLVMTypeRef
 import org.plank.llvm4k.Context
 import org.plank.llvm4k.Owner
@@ -48,26 +68,26 @@ public actual sealed class Type : Owner<LLVMTypeRef> {
   public actual override fun toString(): String = printToString()
 
   public actual enum class Kind(public val llvm: LLVMTypeKind) {
-    Void(LLVMTypeKind.LLVMVoidTypeKind),
-    Half(LLVMTypeKind.LLVMHalfTypeKind),
-    Float(LLVMTypeKind.LLVMFloatTypeKind),
-    Double(LLVMTypeKind.LLVMDoubleTypeKind),
-    X86_FP80(LLVMTypeKind.LLVMX86_FP80TypeKind),
-    FP128(LLVMTypeKind.LLVMFP128TypeKind),
-    PPC_FP128(LLVMTypeKind.LLVMPPC_FP128TypeKind),
-    Label(LLVMTypeKind.LLVMLabelTypeKind),
-    Integer(LLVMTypeKind.LLVMIntegerTypeKind),
-    Function(LLVMTypeKind.LLVMFunctionTypeKind),
-    Struct(LLVMTypeKind.LLVMStructTypeKind),
-    Array(LLVMTypeKind.LLVMArrayTypeKind),
-    Pointer(LLVMTypeKind.LLVMPointerTypeKind),
-    Vector(LLVMTypeKind.LLVMVectorTypeKind),
-    Metadata(LLVMTypeKind.LLVMMetadataTypeKind),
-    X86_MMX(LLVMTypeKind.LLVMX86_MMXTypeKind),
-    Token(LLVMTypeKind.LLVMTokenTypeKind),
-    ScalableVector(LLVMTypeKind.LLVMScalableVectorTypeKind),
-    BFloat(LLVMTypeKind.LLVMBFloatTypeKind),
-    X86_AMX(LLVMTypeKind.LLVMX86_AMXTypeKind);
+    Void(LLVMVoidTypeKind),
+    Half(LLVMHalfTypeKind),
+    Float(LLVMFloatTypeKind),
+    Double(LLVMDoubleTypeKind),
+    X86_FP80(LLVMX86_FP80TypeKind),
+    FP128(LLVMFP128TypeKind),
+    PPC_FP128(LLVMPPC_FP128TypeKind),
+    Label(LLVMLabelTypeKind),
+    Integer(LLVMIntegerTypeKind),
+    Function(LLVMFunctionTypeKind),
+    Struct(LLVMStructTypeKind),
+    Array(LLVMArrayTypeKind),
+    Pointer(LLVMPointerTypeKind),
+    Vector(LLVMVectorTypeKind),
+    Metadata(LLVMMetadataTypeKind),
+    X86_MMX(LLVMX86_MMXTypeKind),
+    Token(LLVMTokenTypeKind),
+    ScalableVector(LLVMScalableVectorTypeKind),
+    BFloat(LLVMBFloatTypeKind),
+    X86_AMX(LLVMX86_AMXTypeKind);
 
     public actual val value: UInt get() = llvm.value
 
@@ -250,26 +270,27 @@ public actual class X86MMXType(public override val ref: LLVMTypeRef?) : Type()
 
 @Suppress("ComplexMethod")
 public fun Type(ref: LLVMTypeRef?): Type {
-  return when (Type.Kind.byValue(llvm.LLVMGetTypeKind(ref))) {
-    Type.Kind.Void -> VoidType(ref)
-    Type.Kind.Half -> FloatType(ref)
-    Type.Kind.Float -> FloatType(ref)
-    Type.Kind.Double -> FloatType(ref)
-    Type.Kind.X86_FP80 -> FloatType(ref)
-    Type.Kind.FP128 -> FloatType(ref)
-    Type.Kind.PPC_FP128 -> FloatType(ref)
-    Type.Kind.Label -> LabelType(ref)
-    Type.Kind.Integer -> IntegerType(ref)
-    Type.Kind.Function -> FunctionType(ref)
-    Type.Kind.Struct -> StructType(ref)
-    Type.Kind.Array -> ArrayType(ref)
-    Type.Kind.Pointer -> PointerType(ref)
-    Type.Kind.Vector -> FixedVectorType(ref)
-    Type.Kind.Metadata -> MetadataType(ref)
-    Type.Kind.X86_MMX -> X86MMXType(ref)
-    Type.Kind.Token -> TokenType(ref)
-    Type.Kind.ScalableVector -> ScalableVectorType(ref)
-    Type.Kind.BFloat -> FloatType(ref)
-    Type.Kind.X86_AMX -> FloatType(ref)
+  return when (val kind = llvm.LLVMGetTypeKind(ref)) {
+    LLVMVoidTypeKind -> VoidType(ref)
+    LLVMHalfTypeKind -> FloatType(ref)
+    LLVMFloatTypeKind -> FloatType(ref)
+    LLVMDoubleTypeKind -> FloatType(ref)
+    LLVMX86_FP80TypeKind -> FloatType(ref)
+    LLVMFP128TypeKind -> FloatType(ref)
+    LLVMPPC_FP128TypeKind -> FloatType(ref)
+    LLVMLabelTypeKind -> LabelType(ref)
+    LLVMIntegerTypeKind -> IntegerType(ref)
+    LLVMFunctionTypeKind -> FunctionType(ref)
+    LLVMStructTypeKind -> StructType(ref)
+    LLVMArrayTypeKind -> ArrayType(ref)
+    LLVMPointerTypeKind -> PointerType(ref)
+    LLVMVectorTypeKind -> FixedVectorType(ref)
+    LLVMMetadataTypeKind -> MetadataType(ref)
+    LLVMX86_MMXTypeKind -> X86MMXType(ref)
+    LLVMTokenTypeKind -> TokenType(ref)
+    LLVMScalableVectorTypeKind -> ScalableVectorType(ref)
+    LLVMBFloatTypeKind -> FloatType(ref)
+    LLVMX86_AMXTypeKind -> FloatType(ref)
+    else -> error("Unknown type kind: $kind")
   }
 }
