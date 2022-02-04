@@ -50,6 +50,10 @@ public actual class GlobalVariable : GlobalObject() {
     get() = TODO("Not yet implemented")
     set(value) {}
 
+  public actual var initializer: Constant?
+    get() = TODO("Not yet implemented")
+    set(value) {}
+
   public actual fun delete() {
   }
 }

@@ -33,6 +33,7 @@ public expect class GlobalVariable : GlobalObject {
   public var threadLocalMode: ThreadLocalMode
   public var constant: Boolean
   public var externallyInitialized: Boolean
+  public var initializer: Constant?
 
   public fun delete()
 }

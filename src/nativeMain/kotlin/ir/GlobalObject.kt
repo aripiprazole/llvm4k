@@ -70,6 +70,12 @@ public actual class GlobalVariable(public override val ref: LLVMValueRef?) : Glo
       llvm.LLVMSetExternallyInitialized(ref, value.toInt())
     }
 
+  public actual var initializer: Constant?
+    get(): Constant? = llvm.LLVMGetInitializer(ref)?.let(::Value) as Constant?
+    set(value) {
+      llvm.LLVMSetInitializer(ref, value?.ref)
+    }
+
   public actual fun delete() {
     llvm.LLVMDeleteGlobal(ref)
   }
