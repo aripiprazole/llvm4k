@@ -41,6 +41,10 @@ public actual sealed class Type : Owner<LLVMTypeRef> {
     return PointerType(this, addrSpace)
   }
 
+  public actual open fun constPointerNull(): ConstantPointerNull {
+    return ConstantPointerNull(llvm.LLVMConstPointerNull(ref))
+  }
+
   public actual override fun toString(): String = printToString()
 
   public actual enum class Kind(public val llvm: LLVMTypeKind) {

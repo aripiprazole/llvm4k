@@ -27,6 +27,8 @@ public expect sealed class Type {
 
   public open fun pointer(addrSpace: AddrSpace = AddrSpace.Generic): PointerType
 
+  public open fun constPointerNull(): ConstantPointerNull
+
   public override fun toString(): String
 
   public enum class Kind {

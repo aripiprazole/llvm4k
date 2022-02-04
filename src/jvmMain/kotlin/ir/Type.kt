@@ -38,6 +38,10 @@ public actual sealed class Type {
     TODO("Not yet implemented")
   }
 
+  public actual open fun constPointerNull(): ConstantPointerNull {
+    TODO("Not yet implemented")
+  }
+
   public actual enum class Kind {
     Void,
     Half,
