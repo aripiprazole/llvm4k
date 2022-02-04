@@ -644,6 +644,14 @@ internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
     return PhiInst(llvm.LLVMBuildPhi(ref, type.ref, name ?: ""))
   }
 
+  override fun createIsNull(value: Value, name: String?): Value {
+    return Value(llvm.LLVMBuildIsNull(ref, value.ref, name ?: ""))
+  }
+
+  override fun createIsNotNull(value: Value, name: String?): Value {
+    return Value(llvm.LLVMBuildIsNotNull(ref, value.ref, name ?: ""))
+  }
+
   override fun close() {
     llvm.LLVMDisposeBuilder(ref)
   }

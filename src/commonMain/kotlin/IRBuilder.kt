@@ -443,4 +443,8 @@ public interface IRBuilder : Disposable {
   public fun createFreeze(value: Value, name: String? = null): Value
 
   public fun createPhi(type: Type, name: String? = null): PhiInst
+
+  public fun createIsNull(value: Value, name: String? = null): Value
+
+  public fun createIsNotNull(value: Value, name: String? = null): Value
 }
