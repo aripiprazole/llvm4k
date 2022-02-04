@@ -16,7 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public actual class Argument : NamedValue {
+public actual class Argument : Value(), NamedValue {
   public actual val parent: Function
     get() = TODO("Not yet implemented")
 }

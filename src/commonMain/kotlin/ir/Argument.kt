@@ -16,6 +16,6 @@
 
 package org.plank.llvm4k.ir
 
-public expect class Argument : NamedValue {
+public expect class Argument : Value, NamedValue {
   public val parent: Function
 }
