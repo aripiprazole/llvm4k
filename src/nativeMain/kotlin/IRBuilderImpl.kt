@@ -50,6 +50,7 @@ import org.plank.llvm4k.ir.SwitchInst
 import org.plank.llvm4k.ir.Type
 import org.plank.llvm4k.ir.UnreachableInst
 import org.plank.llvm4k.ir.Value
+import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
 internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
@@ -61,9 +62,11 @@ internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
     return this
   }
 
-  override fun createGlobalStringPtr(value: String): ReadOnlyProperty<Any?, GlobalVariable> {
-    return ReadOnlyProperty { _, property ->
-      createGlobalString(value, property.name)
+  override fun createGlobalStringPtr(value: String): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, GlobalVariable>> {
+    return PropertyDelegateProvider { _, property ->
+      val ptr = createGlobalStringPtr(value, property.name)
+
+      ReadOnlyProperty { _, _ -> ptr }
     }
   }
 
@@ -71,9 +74,11 @@ internal class IRBuilderImpl(val ref: llvm.LLVMBuilderRef?) : IRBuilder {
     return GlobalVariable(llvm.LLVMBuildGlobalStringPtr(ref, value, name))
   }
 
-  override fun createGlobalString(value: String): ReadOnlyProperty<Any?, GlobalVariable> {
-    return ReadOnlyProperty { _, property ->
-      createGlobalString(value, property.name)
+  override fun createGlobalString(value: String): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, GlobalVariable>> {
+    return PropertyDelegateProvider { _, property ->
+      val string = createGlobalString(value, property.name)
+
+      ReadOnlyProperty { _, _ -> string }
     }
   }
 

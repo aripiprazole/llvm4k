@@ -51,6 +51,7 @@ import org.plank.llvm4k.ir.SwitchInst
 import org.plank.llvm4k.ir.Type
 import org.plank.llvm4k.ir.UnreachableInst
 import org.plank.llvm4k.ir.Value
+import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadOnlyProperty
 
 public interface IRBuilder : Disposable {
@@ -58,11 +59,11 @@ public interface IRBuilder : Disposable {
 
   public fun positionAfter(block: BasicBlock): IRBuilder
 
-  public fun createGlobalStringPtr(value: String): ReadOnlyProperty<Any?, GlobalVariable>
+  public fun createGlobalStringPtr(value: String): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, GlobalVariable>>
 
   public fun createGlobalStringPtr(value: String, name: String): GlobalVariable
 
-  public fun createGlobalString(value: String): ReadOnlyProperty<Any?, GlobalVariable>
+  public fun createGlobalString(value: String): PropertyDelegateProvider<Any?, ReadOnlyProperty<Any?, GlobalVariable>>
 
   public fun createGlobalString(value: String, name: String): GlobalVariable
 
