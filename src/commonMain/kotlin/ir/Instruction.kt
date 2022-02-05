@@ -16,7 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public expect sealed class Instruction : Value
+public expect sealed class Instruction : User
 
 public expect class CallInst : Instruction
 

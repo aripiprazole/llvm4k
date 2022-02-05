@@ -40,7 +40,7 @@ import llvm.LLVMOpcode.LLVMSwitch
 import llvm.LLVMOpcode.LLVMUnreachable
 import llvm.LLVMValueRef
 
-public actual sealed class Instruction : Value()
+public actual sealed class Instruction : User()
 
 public actual class CallInst(public override val ref: LLVMValueRef?) : Instruction()
 

@@ -16,7 +16,7 @@
 
 package org.plank.llvm4k.ir
 
-public actual sealed class Instruction : Value()
+public actual sealed class Instruction : User()
 
 public actual class CallInst : Instruction()
 
