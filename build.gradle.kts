@@ -143,10 +143,6 @@ configure<KotlinMultiplatformExtension> {
     }
   }
 
-  js(IR) {
-    nodejs()
-  }
-
   val linuxX64 = linuxX64("linuxX64")
   val mingwX64 = mingwX64("mingwX64")
 
