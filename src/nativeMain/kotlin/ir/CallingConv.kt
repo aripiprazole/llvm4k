@@ -67,12 +67,16 @@ public actual enum class CallingConv(public val llvm: LLVMCallConv) {
    */
   AnyReg(LLVMCallConv.LLVMAnyRegCallConv),
 
-  // PreserveMost - Calling convention for runtime calls that preserves most
-  // registers.
+  /**
+   * PreserveMost - Calling convention for runtime calls that preserves most
+   * registers.
+   */
   PreserveMost(LLVMCallConv.LLVMPreserveMostCallConv),
 
-  // PreserveAll - Calling convention for runtime calls that preserves
-  // (almost) all registers.
+  /**
+   * PreserveAll - Calling convention for runtime calls that preserves
+   * (almost) all registers.
+   */
   PreserveAll(LLVMCallConv.LLVMPreserveAllCallConv),
 
   /**

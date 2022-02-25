@@ -65,12 +65,16 @@ public expect enum class CallingConv {
    */
   AnyReg,
 
-  // PreserveMost - Calling convention for runtime calls that preserves most
-  // registers.
+  /**
+   * PreserveMost - Calling convention for runtime calls that preserves most
+   * registers.
+   */
   PreserveMost,
 
-  // PreserveAll - Calling convention for runtime calls that preserves
-  // (almost) all registers.
+  /**
+   * PreserveAll - Calling convention for runtime calls that preserves
+   * (almost) all registers.
+   */
   PreserveAll,
 
   /**
