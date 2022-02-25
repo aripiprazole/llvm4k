@@ -16,6 +16,11 @@
 
 package org.plank.llvm4k
 
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.javacpp.SizeTPointer
+import org.bytedeco.llvm.LLVM.LLVMExecutionEngineRef
+import org.bytedeco.llvm.LLVM.LLVMModuleRef
+import org.bytedeco.llvm.global.LLVM
 import org.plank.llvm4k.ir.AddrSpace
 import org.plank.llvm4k.ir.Constant
 import org.plank.llvm4k.ir.Function
@@ -27,98 +32,153 @@ import org.plank.llvm4k.ir.PointerType
 import org.plank.llvm4k.ir.StructType
 import org.plank.llvm4k.ir.Type
 
-public actual class Module : Disposable {
-  public actual val context: Context
-    get() = TODO("Not yet implemented")
+public actual class Module(public override val ref: LLVMModuleRef?) :
+  Disposable,
+  Owner<LLVMModuleRef> {
+  public actual val context: Context get() = Context(LLVM.LLVMGetModuleContext(ref))
 
   public actual var inlineAsm: String
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): String {
+      val size = SizeTPointer()
+
+      return LLVM.LLVMGetModuleInlineAsm(ref, size)!!.getString(Charsets.UTF_8)
+    }
+    set(value) {
+      return LLVM.LLVMSetModuleInlineAsm2(ref, value, value.length.toLong())
+    }
 
   public actual var sourceFilename: String
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): String {
+      val size = SizeTPointer()
+
+      return LLVM.LLVMGetSourceFileName(ref, size)!!.getString(Charsets.UTF_8)
+    }
+    set(value) {
+      LLVM.LLVMSetSourceFileName(ref, value, value.length.toLong())
+    }
 
   public actual var moduleIdentifier: String
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): String {
+      val size = SizeTPointer()
+
+      return LLVM.LLVMGetModuleIdentifier(ref, size)!!.getString(Charsets.UTF_8)
+    }
+    set(value) {
+      LLVM.LLVMSetModuleIdentifier(ref, value, value.length.toLong())
+    }
+
   public actual var dataLayout: String
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): String = LLVM.LLVMGetDataLayout(ref)!!.getString(Charsets.UTF_8)
+    set(value) {
+      LLVM.LLVMSetDataLayout(ref, value)
+    }
 
   public actual fun dump(file: String) {
+    val message = BytePointer()
+
+    LLVM.LLVMPrintModuleToFile(ref, file, message)
+
+    if (!message.isNull) {
+      throw LLVMError(message.getString(Charsets.UTF_8))
+    }
   }
 
   public actual fun appendInlineAsm(asm: String) {
+    LLVM.LLVMAppendModuleInlineAsm(ref, asm, asm.length.toLong())
   }
 
   public actual fun writeBitcode(file: String) {
-  }
-
-  public actual fun createJITExecutionEngine(level: OptimizationLevel): ExecutionEngine {
-    TODO("Not yet implemented")
+    LLVM.LLVMWriteBitcodeToFile(ref, file)
   }
 
   public actual fun getTypeByName(name: String): StructType? {
-    TODO("Not yet implemented")
+    return LLVM.LLVMGetTypeByName(ref, name)?.let(::StructType)
+  }
+
+  public actual fun createJITExecutionEngine(level: OptimizationLevel): ExecutionEngine {
+    LLVM.LLVMInitializeNativeTarget()
+
+    val error = BytePointer()
+    val executionEngineRef = LLVMExecutionEngineRef()
+
+    LLVM.LLVMCreateJITCompilerForModule(executionEngineRef, ref, level.value.toInt(), error)
+
+    if (!error.isNull) {
+      throw LLVMError(error.getString(Charsets.UTF_8))
+    }
+
+    return ExecutionEngine(executionEngineRef)
   }
 
   public actual fun getGlobalIFunc(name: String): GlobalIFunc? {
-    TODO("Not yet implemented")
+    return LLVM.LLVMGetNamedGlobalIFunc(ref, name, name.length.toLong())?.let(::GlobalIFunc)
   }
 
   public actual fun addGlobalIFunc(
     name: String,
     type: FunctionType,
     addrSpace: AddrSpace,
-    resolver: Function?
+    resolver: Function?,
   ): GlobalIFunc {
-    TODO("Not yet implemented")
+    val ref = LLVM.LLVMAddGlobalIFunc(
+      ref,
+      name,
+      name.length.toLong(),
+      type.ref,
+      addrSpace.value.toInt(),
+      resolver?.ref
+    )
+
+    return GlobalIFunc(ref)
   }
 
   public actual fun getGlobalVariable(name: String): GlobalVariable? {
-    TODO("Not yet implemented")
+    return LLVM.LLVMGetNamedGlobal(ref, name)?.let(::GlobalVariable)
   }
 
   public actual fun addGlobalVariable(
     name: String,
     type: Type,
-    addrSpace: AddrSpace
+    addrSpace: AddrSpace,
   ): GlobalVariable {
-    TODO("Not yet implemented")
+    return GlobalVariable(LLVM.LLVMAddGlobal(ref, type.ref, name))
   }
 
   public actual fun getGlobalAlias(name: String): GlobalAlias? {
-    TODO("Not yet implemented")
+    return LLVM.LLVMGetNamedGlobalAlias(ref, name, name.length.toLong())?.let(::GlobalAlias)
   }
 
   public actual fun addGlobalAlias(
     name: String,
     type: PointerType,
-    constant: Constant
+    constant: Constant,
   ): GlobalAlias {
-    TODO("Not yet implemented")
+    return GlobalAlias(LLVM.LLVMAddAlias(ref, type.ref, constant.ref, name))
   }
 
   public actual fun getFunction(name: String): Function? {
-    TODO("Not yet implemented")
+    return LLVM.LLVMGetNamedFunction(ref, name)?.let(::Function)
   }
 
-  public actual fun addFunction(
-    name: String,
-    type: FunctionType
-  ): Function {
-    TODO("Not yet implemented")
+  public actual fun addFunction(name: String, type: FunctionType): Function {
+    return Function(LLVM.LLVMAddFunction(ref, name, type.ref))
   }
 
   public actual fun verify() {
+    val message = BytePointer()
+
+    LLVM.LLVMVerifyModule(ref, LLVM.LLVMReturnStatusAction, message)
+
+    if (!message.isNull) {
+      throw LLVMError(message.getString(Charsets.UTF_8))
+    }
   }
 
   public override fun close() {
-    TODO("Not yet implemented")
+    LLVM.LLVMDisposeModule(ref)
   }
 
   public actual override fun toString(): String {
-    TODO("Not yet implemented")
+    return LLVM.LLVMPrintModuleToString(ref)!!.getString(Charsets.UTF_8)
   }
 }

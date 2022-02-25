@@ -16,29 +16,35 @@
 
 package org.plank.llvm4k.ir
 
-public actual class BasicBlock {
-  public actual val name: String
-    get() = TODO("Not yet implemented")
-  public actual val function: Function?
-    get() = TODO("Not yet implemented")
-  public actual val asValue: AsValue
-    get() = TODO("Not yet implemented")
+import org.bytedeco.llvm.LLVM.LLVMBasicBlockRef
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+import org.bytedeco.llvm.global.LLVM
+import org.plank.llvm4k.Owner
+
+public actual class BasicBlock(public override val ref: LLVMBasicBlockRef?) :
+  Owner<LLVMBasicBlockRef> {
+  public actual val name: String get() = LLVM.LLVMGetBasicBlockName(ref).getString(Charsets.UTF_8)
+  public actual val function: Function? get() = LLVM.LLVMGetBasicBlockParent(ref)?.let(::Function)
+
+  public actual val asValue: AsValue get() = AsValue(LLVM.LLVMBasicBlockAsValue(ref))
 
   public actual fun moveAfter(target: BasicBlock) {
+    LLVM.LLVMMoveBasicBlockAfter(ref, target.ref)
   }
 
   public actual fun moveBefore(target: BasicBlock) {
+    LLVM.LLVMMoveBasicBlockBefore(ref, target.ref)
   }
 
   public actual fun delete() {
+    LLVM.LLVMDeleteBasicBlock(ref)
   }
 
   public actual fun erase() {
+    LLVM.LLVMRemoveBasicBlockFromParent(ref)
   }
 
-  public actual override fun toString(): String {
-    TODO("Not yet implemented")
-  }
+  public actual override fun toString(): String = asValue.toString()
 
-  public actual class AsValue : Value()
+  public actual class AsValue(public override val ref: LLVMValueRef?) : Value()
 }

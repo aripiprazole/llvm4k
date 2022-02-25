@@ -16,38 +16,50 @@
 
 package org.plank.llvm4k.ir
 
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+import org.bytedeco.llvm.global.LLVM
 import org.plank.llvm4k.Module
 
 public actual sealed class GlobalValue : Constant(), NamedValue {
   public actual open var linkage: Linkage
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): Linkage = Linkage.byValue(LLVM.LLVMGetLinkage(ref))
+    set(value) {
+      LLVM.LLVMSetLinkage(ref, value.llvm)
+    }
 
   public actual open var visibility: Visibility
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): Visibility = Visibility.byValue(LLVM.LLVMGetVisibility(ref))
+    set(value) {
+      LLVM.LLVMSetVisibility(ref, value.llvm)
+    }
 
   public actual open var section: String?
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): String? = LLVM.LLVMGetSection(ref)?.getString(Charsets.UTF_8)
+    set(value) {
+      LLVM.LLVMSetSection(ref, value)
+    }
 
   public actual open var dllStorageClass: DLLStorageClass
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): DLLStorageClass = DLLStorageClass.byValue(LLVM.LLVMGetDLLStorageClass(ref))
+    set(value) {
+      LLVM.LLVMSetDLLStorageClass(ref, value.llvm)
+    }
 
   public actual open var unnamedAddr: UnnamedAddr
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): UnnamedAddr = UnnamedAddr.byValue(LLVM.LLVMGetUnnamedAddress(ref))
+    set(value) {
+      LLVM.LLVMSetUnnamedAddress(ref, value.llvm)
+    }
 
-  public actual open val module: Module
-    get() = TODO("Not yet implemented")
-
-  public actual open val valueType: Type
-    get() = TODO("Not yet implemented")
+  public actual open val module: Module get() = Module(LLVM.LLVMGetGlobalParent(ref))
+  public actual open val valueType: Type get() = Type(LLVM.LLVMGlobalGetValueType(ref))
 }
 
-public actual class GlobalAlias : GlobalValue() {
+public actual class GlobalAlias(public override val ref: LLVMValueRef?) : GlobalValue() {
   public actual var aliasee: Constant
-    get() = TODO("Not yet implemented")
-    set(value) {}
+    get(): Constant = Value(LLVM.LLVMAliasGetAliasee(ref)) as? Constant
+      ?: error("Aliasee expected to be a Constant")
+    set(value) {
+      LLVM.LLVMAliasSetAliasee(ref, value.ref)
+    }
 }

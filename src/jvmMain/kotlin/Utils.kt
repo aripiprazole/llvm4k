@@ -16,31 +16,22 @@
 
 package org.plank.llvm4k
 
+import org.bytedeco.javacpp.Pointer
+import org.bytedeco.javacpp.PointerPointer
 import org.bytedeco.llvm.global.LLVM
+import org.plank.llvm4k.ir.Type
+import org.plank.llvm4k.ir.Value
 
-/** Code generation optimization level. */
-public actual enum class OptimizationLevel(public val llvm: Int) {
-  /** -O0 */
-  None(LLVM.LLVMCodeGenLevelNone),
+internal fun Type.printToString(): String {
+  return LLVM.LLVMPrintTypeToString(ref)!!.getString(Charsets.UTF_8)
+}
 
-  /** -O1 */
-  Less(LLVM.LLVMCodeGenLevelLess),
+internal fun Value.printToString(): String {
+  return LLVM.LLVMPrintValueToString(ref)!!.getString(Charsets.UTF_8)
+}
 
-  /** -O2 */
-  Default(LLVM.LLVMCodeGenLevelDefault),
+internal fun Boolean.toInt(): Int = if (this) 1 else 0
 
-  /** -O3 */
-  Aggressive(LLVM.LLVMCodeGenLevelAggressive);
-
-  public actual val value: UInt get() = llvm.toUInt()
-
-  public actual companion object {
-    public actual fun byValue(value: Int): OptimizationLevel {
-      return byValue(value.toUInt())
-    }
-
-    public actual fun byValue(value: UInt): OptimizationLevel {
-      return values().single { it.value == value }
-    }
-  }
+internal inline fun <reified T : Pointer> Collection<T?>.toPointerPointer(): PointerPointer<T> {
+  return PointerPointer(*toTypedArray())
 }

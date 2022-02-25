@@ -16,53 +16,63 @@
 
 package org.plank.llvm4k.ir
 
+import org.bytedeco.llvm.global.LLVM.LLVMAppendingLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMAvailableExternallyLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMCommonLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMExternalLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMInternalLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMLinkOnceAnyLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMLinkOnceODRLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMPrivateLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMWeakAnyLinkage
+import org.bytedeco.llvm.global.LLVM.LLVMWeakODRLinkage
+
 /**
  * An enumeration for the kinds of linkage for global values.
  */
-public actual enum class Linkage {
+public actual enum class Linkage(public val llvm: Int) {
   /**  Externally visible function */
-  External,
+  External(LLVMExternalLinkage),
 
   /** Available for inspection, not emission. */
-  AvailableExternally,
+  AvailableExternally(LLVMAvailableExternallyLinkage),
 
   /** Keep one copy of function when linking (inline) */
-  LinkOnceAny,
+  LinkOnceAny(LLVMLinkOnceAnyLinkage),
 
   /** Same, but only replaced by something equivalent. */
-  LinkOnceODR,
+  LinkOnceODR(LLVMLinkOnceODRLinkage),
 
   /** Keep one copy of named function when linking (weak) */
-  WeakAny,
+  WeakAny(LLVMWeakAnyLinkage),
 
   /** Same, but only replaced by something equivalent. */
-  WeakODR,
+  WeakODR(LLVMWeakODRLinkage),
 
   /** Special purpose, only applies to global arrays */
-  Appending,
+  Appending(LLVMAppendingLinkage),
 
   /** Rename collisions when linking (static functions). */
-  Internal,
+  Internal(LLVMInternalLinkage),
 
   /** Like Internal, but omit from symbol table. */
-  Private,
+  Private(LLVMPrivateLinkage),
 
   /** ExternalWeak linkage description. */
-  ExternalWeak,
+  ExternalWeak(LLVMExternalLinkage),
 
   /** Tentative definitions. */
-  Common;
+  Common(LLVMCommonLinkage);
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): Linkage {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): Linkage {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

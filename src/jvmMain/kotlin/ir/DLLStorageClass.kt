@@ -16,21 +16,22 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class DLLStorageClass {
-  Default,
-  DLLImport,
-  DLLExport;
+import org.bytedeco.llvm.global.LLVM.*
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class DLLStorageClass(public val llvm: Int) {
+  Default(LLVMDefaultStorageClass),
+  DLLImport(LLVMDLLImportStorageClass),
+  DLLExport(LLVMDLLExportStorageClass);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): DLLStorageClass {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): DLLStorageClass {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

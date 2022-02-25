@@ -16,4 +16,6 @@
 
 package org.plank.llvm4k.ir
 
-public actual class BlockAddress : Constant()
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+
+public actual class BlockAddress(public override val ref: LLVMValueRef?) : Constant()

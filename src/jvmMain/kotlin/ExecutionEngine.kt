@@ -14,20 +14,46 @@
  *    limitations under the License.
  */
 
+@file:Suppress("USELESS_CAST")
+
 package org.plank.llvm4k
 
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.llvm.LLVM.LLVMExecutionEngineRef
+import org.bytedeco.llvm.LLVM.LLVMGenericValueRef
+import org.bytedeco.llvm.global.LLVM
+import org.plank.llvm4k.ir.FloatType
 import org.plank.llvm4k.ir.Function
+import org.plank.llvm4k.ir.IntegerType
 
-public actual class ExecutionEngine : Disposable {
+public actual class ExecutionEngine(
+  public override val ref: LLVMExecutionEngineRef?,
+) : Disposable, Owner<LLVMExecutionEngineRef> {
   public actual fun runFunction(callee: Function, vararg args: GenericValue<*>): GenericValue<*> {
-    TODO("Not yet implemented")
+    val ref = LLVM.LLVMRunFunction(
+      ref, callee.ref, args.size, args.map { it.ref }.toPointerPointer()
+    )
+
+    return when (val returnType = callee.returnType) {
+      is FloatType -> FloatValue(returnType, ref)
+      is IntegerType -> IntegerValue(true, returnType, ref)
+      else -> AnyValue(returnType, ref as LLVMGenericValueRef?)
+    }
   }
 
   public actual fun runFunctionAsMain(callee: Function, args: Array<String>): Int {
-    TODO("Not yet implemented")
+    return LLVM.LLVMRunFunctionAsMain(
+      ref, callee.ref, args.size,
+      args.map { BytePointer(it) }.toPointerPointer(),
+      emptyArray<String>().map { BytePointer(it) }.toPointerPointer(),
+    )
   }
 
-  override fun close() {
-    TODO("Not yet implemented")
+  public override fun close() {
+    LLVM.LLVMDisposeExecutionEngine(ref)
+  }
+
+  public override fun toString(): String {
+    return "ExecutionEngine"
   }
 }

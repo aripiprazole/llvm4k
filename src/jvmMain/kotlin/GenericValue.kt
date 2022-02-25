@@ -16,57 +16,59 @@
 
 package org.plank.llvm4k
 
+import org.bytedeco.llvm.LLVM.LLVMGenericValueRef
+import org.bytedeco.llvm.global.LLVM
 import org.plank.llvm4k.ir.IntegerType
 import org.plank.llvm4k.ir.Type
 
-public actual sealed interface GenericValue<A> : Disposable {
+public actual sealed interface GenericValue<A> : Disposable, Owner<LLVMGenericValueRef> {
   public actual val type: Type
   public actual val value: A
-}
-
-public actual class AnyValue public actual constructor(type: Type, value: Any) :
-  GenericValue<Any?> {
-  public override val type: Type
-    get() = TODO("Not yet implemented")
-
-  public override val value: Any?
-    get() = TODO("Not yet implemented")
 
   public override fun close() {
-    TODO("Not yet implemented")
+    LLVM.LLVMDisposeGenericValue(ref)
   }
 }
 
-public actual class FloatValue public actual constructor(
-  type: Type,
-  value: Int
+public actual class AnyValue(
+  public override val type: Type,
+  public override val ref: LLVMGenericValueRef?,
+) : GenericValue<Any?> {
+  public actual constructor(type: Type, value: Any) :
+    this(type, TODO("Not yet implemented") as LLVMGenericValueRef?)
+
+  public override val value: Any? get() = LLVM.LLVMGenericValueToPointer(ref)
+
+  public override fun toString(): String {
+    return "AnyValue($value)"
+  }
+}
+
+public actual class FloatValue(
+  public override val type: Type,
+  public override val ref: LLVMGenericValueRef?,
 ) : GenericValue<Float> {
-  public override val type: Type
-    get() = TODO("Not yet implemented")
+  public actual constructor(type: Type, value: Int) :
+    this(type, LLVM.LLVMCreateGenericValueOfFloat(type.ref, value.toDouble()))
 
-  public override val value: Float
-    get() = TODO("Not yet implemented")
+  public override val value: Float get() = LLVM.LLVMGenericValueToFloat(type.ref, ref).toFloat()
 
-  public override fun close() {
-    TODO("Not yet implemented")
+  public override fun toString(): String {
+    return "FloatValue($value)"
   }
 }
 
-public actual class IntegerValue public actual constructor(
-  type: IntegerType,
-  value: Int,
-  signed: Boolean
+public actual class IntegerValue(
+  public actual val signed: Boolean,
+  public override val type: IntegerType,
+  public override val ref: LLVMGenericValueRef?,
 ) : GenericValue<Int> {
-  public actual val signed: Boolean
-    get() = TODO("Not yet implemented")
+  public actual constructor(type: IntegerType, value: Int, signed: Boolean) :
+    this(signed, type, LLVM.LLVMCreateGenericValueOfInt(type.ref, value.toLong(), signed.toInt()))
 
-  public override val type: Type
-    get() = TODO("Not yet implemented")
+  public override val value: Int get() = LLVM.LLVMGenericValueToInt(ref, signed.toInt()).toInt()
 
-  public override val value: Int
-    get() = TODO("Not yet implemented")
-
-  public override fun close() {
-    TODO("Not yet implemented")
+  public override fun toString(): String {
+    return "IntegerValue($value)"
   }
 }

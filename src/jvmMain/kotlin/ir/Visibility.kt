@@ -16,27 +16,30 @@
 
 package org.plank.llvm4k.ir
 
+import org.bytedeco.llvm.global.LLVM.LLVMDefaultVisibility
+import org.bytedeco.llvm.global.LLVM.LLVMHiddenVisibility
+import org.bytedeco.llvm.global.LLVM.LLVMProtectedVisibility
+
 /** An enumeration for the kinds of visibility of global values. */
-public actual enum class Visibility {
+public actual enum class Visibility(public val llvm: Int) {
   /** The GV is visible. */
-  Default,
+  Default(LLVMDefaultVisibility),
 
   /** The GV is hidden. */
-  Hidden,
+  Hidden(LLVMHiddenVisibility),
 
   /** The GV is protected. */
-  Protected;
+  Protected(LLVMProtectedVisibility);
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): Visibility {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): Visibility {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

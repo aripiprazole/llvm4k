@@ -16,33 +16,49 @@
 
 package org.plank.llvm4k.ir
 
+import org.bytedeco.javacpp.IntPointer
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+import org.bytedeco.llvm.global.LLVM
+
 public actual sealed class ConstantData : Constant()
 
-public actual class ConstantAggregate : ConstantData()
+public actual class ConstantAggregate(public override val ref: LLVMValueRef?) : ConstantData()
 
 public actual sealed class ConstantDataSequential : ConstantData()
 
-public actual class ConstantDataArray : ConstantDataSequential()
+public actual class ConstantDataArray(public override val ref: LLVMValueRef?) :
+  ConstantDataSequential()
 
-public actual class ConstantDataVector : ConstantDataSequential()
-public actual class ConstantFP : ConstantData() {
+public actual class ConstantDataVector(public override val ref: LLVMValueRef?) :
+  ConstantDataSequential()
+
+public actual class ConstantFP(public override val ref: LLVMValueRef?) : ConstantData() {
   public actual val realValue: FPValue
-    get() = TODO("Not yet implemented")
-  public actual val value: Float
-    get() = TODO("Not yet implemented")
+    get(): FPValue {
+      val lossy = IntPointer(1L)
+      val value = LLVM.LLVMConstRealGetDouble(ref, lossy).toFloat()
+
+      return FPValue(value, lossy.get() == 1)
+    }
+
+  public actual val value: Float get() = realValue.value
 }
 
-public actual class ConstantInt : ConstantData() {
-  public actual val zExtValue: Long
-    get() = TODO("Not yet implemented")
-  public actual val sExtValue: Long
-    get() = TODO("Not yet implemented")
+public actual class ConstantInt(public override val ref: LLVMValueRef?) : ConstantData() {
+  public actual val zExtValue: Long get() = LLVM.LLVMConstIntGetZExtValue(ref).toLong()
+  public actual val sExtValue: Long get() = LLVM.LLVMConstIntGetSExtValue(ref)
 }
 
-public actual class ConstantPointerNull : ConstantData()
+public actual class ConstantPointerNull(public override val ref: LLVMValueRef?) : ConstantData()
 
-public actual class ConstantTokenNone : ConstantData()
+public actual class ConstantTokenNone(public override val ref: LLVMValueRef?) : ConstantData()
 
 public actual sealed class UndefValue : ConstantData()
 
-public actual class PoisonValue : UndefValue()
+private class UndefValueImpl(override val ref: LLVMValueRef?) : UndefValue()
+
+public actual class PoisonValue(public override val ref: LLVMValueRef?) : UndefValue()
+
+public fun UndefValue(ref: LLVMValueRef?): UndefValue {
+  return UndefValueImpl(ref)
+}

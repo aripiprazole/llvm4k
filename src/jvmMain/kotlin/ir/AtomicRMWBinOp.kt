@@ -16,31 +16,44 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class AtomicRMWBinOp {
-  Xchg,
-  Add,
-  Sub,
-  And,
-  Nand,
-  Or,
-  Xor,
-  Max,
-  Min,
-  UMax,
-  UMin,
-  FAdd,
-  FSub;
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpAdd
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpAnd
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpFAdd
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpFSub
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpMax
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpMin
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpNand
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpOr
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpSub
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpUMax
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpUMin
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpXchg
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicRMWBinOpXor
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class AtomicRMWBinOp(public val llvm: Int) {
+  Xchg(LLVMAtomicRMWBinOpXchg),
+  Add(LLVMAtomicRMWBinOpAdd),
+  Sub(LLVMAtomicRMWBinOpSub),
+  And(LLVMAtomicRMWBinOpAnd),
+  Nand(LLVMAtomicRMWBinOpNand),
+  Or(LLVMAtomicRMWBinOpOr),
+  Xor(LLVMAtomicRMWBinOpXor),
+  Max(LLVMAtomicRMWBinOpMax),
+  Min(LLVMAtomicRMWBinOpMin),
+  UMax(LLVMAtomicRMWBinOpUMax),
+  UMin(LLVMAtomicRMWBinOpUMin),
+  FAdd(LLVMAtomicRMWBinOpFAdd),
+  FSub(LLVMAtomicRMWBinOpFSub);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): AtomicRMWBinOp {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): AtomicRMWBinOp {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

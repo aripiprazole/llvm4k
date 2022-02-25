@@ -16,34 +16,35 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class RealPredicate {
-  False,
-  OEQ,
-  OGT,
-  OGE,
-  OLT,
-  OLE,
-  ONE,
-  ORD,
-  UNO,
-  UEQ,
-  UGT,
-  UGE,
-  ULT,
-  ULE,
-  UNE,
-  True;
+import org.bytedeco.llvm.global.LLVM.*
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class RealPredicate(public val llvm: Int) {
+  False(LLVMRealPredicateFalse),
+  OEQ(LLVMRealOEQ),
+  OGT(LLVMRealOGT),
+  OGE(LLVMRealOGE),
+  OLT(LLVMRealOLT),
+  OLE(LLVMRealOLE),
+  ONE(LLVMRealONE),
+  ORD(LLVMRealORD),
+  UNO(LLVMRealUNO),
+  UEQ(LLVMRealUEQ),
+  UGT(LLVMRealUGT),
+  UGE(LLVMRealUGE),
+  ULT(LLVMRealULT),
+  ULE(LLVMRealULE),
+  UNE(LLVMRealUNE),
+  True(LLVMRealPredicateTrue);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): RealPredicate {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): RealPredicate {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

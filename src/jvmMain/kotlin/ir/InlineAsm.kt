@@ -16,4 +16,6 @@
 
 package org.plank.llvm4k.ir
 
-public actual class InlineAsm : Value()
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+
+public actual class InlineAsm(public override val ref: LLVMValueRef?) : Value()

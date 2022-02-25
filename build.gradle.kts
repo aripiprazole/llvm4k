@@ -136,7 +136,7 @@ configure<KotlinMultiplatformExtension> {
   jvm {
     withJava()
     compilations.all {
-      kotlinOptions.jvmTarget = "17"
+      kotlinOptions.jvmTarget = "16"
     }
     testRuns["test"].executionTask.configure {
       useJUnitPlatform()
@@ -162,6 +162,14 @@ configure<KotlinMultiplatformExtension> {
     val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
+      }
+    }
+
+    val jvmMain by getting {
+      dependencies {
+        implementation("org.bytedeco:llvm-platform:13.0.1-1.5.7")
+        implementation("org.bytedeco:libffi-platform:3.4.2-1.5.7")
+        implementation("net.java.dev.jna:jna:5.5.0")
       }
     }
 

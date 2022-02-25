@@ -16,23 +16,24 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class ThreadLocalMode {
-  NotThreadLocal,
-  GeneralDynamicTLSModel,
-  LocalDynamicTLSModel,
-  InitialExecTLSModel,
-  LocalExecTLSModel;
+import org.bytedeco.llvm.global.LLVM.*
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class ThreadLocalMode(public val llvm: Int) {
+  NotThreadLocal(LLVMNotThreadLocal),
+  GeneralDynamicTLSModel(LLVMGeneralDynamicTLSModel),
+  LocalDynamicTLSModel(LLVMLocalDynamicTLSModel),
+  InitialExecTLSModel(LLVMInitialExecTLSModel),
+  LocalExecTLSModel(LLVMLocalExecTLSModel);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): ThreadLocalMode {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): ThreadLocalMode {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

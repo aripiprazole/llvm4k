@@ -16,4 +16,6 @@
 
 package org.plank.llvm4k.ir
 
-public actual class MetadataAsValue : Value()
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+
+public actual class MetadataAsValue(public override val ref: LLVMValueRef?) : Value()

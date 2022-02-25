@@ -16,12 +16,14 @@
 
 package org.plank.llvm4k.ir
 
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+
 public actual sealed class MemoryAccess : User()
 
-public actual class MemoryPhi : MemoryAccess()
+public actual class MemoryPhi(public override val ref: LLVMValueRef?) : MemoryAccess()
 
 public actual sealed class MemoryUseOrDef : MemoryAccess()
 
-public actual class MemoryUse : MemoryUseOrDef()
+public actual class MemoryUse(public override val ref: LLVMValueRef?) : MemoryUseOrDef()
 
-public actual class MemoryDef : MemoryUseOrDef()
+public actual class MemoryDef(public override val ref: LLVMValueRef?) : MemoryUseOrDef()

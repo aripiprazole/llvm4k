@@ -123,7 +123,7 @@ public expect class FloatType : Type {
 public expect class FunctionType(
   returnType: Type,
   params: List<Type>,
-  isVarargs: Boolean = false
+  isVarargs: Boolean = false,
 ) : Type {
   public val returnType: Type
   public val isVarargs: Boolean

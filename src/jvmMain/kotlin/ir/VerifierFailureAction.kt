@@ -16,21 +16,22 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class VerifierFailureAction {
-  AbortProcess,
-  PrintMessage,
-  ReturnStatus;
+import org.bytedeco.llvm.global.LLVM.*
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class VerifierFailureAction(public val llvm: Int) {
+  AbortProcess(LLVMAbortProcessAction),
+  PrintMessage(LLVMPrintMessageAction),
+  ReturnStatus(LLVMReturnStatusAction);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): VerifierFailureAction {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): VerifierFailureAction {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

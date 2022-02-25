@@ -16,24 +16,71 @@
 
 package org.plank.llvm4k.ir
 
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+import org.bytedeco.llvm.global.LLVM.*
+
 public actual sealed class ConstantExpr : Constant()
 
-public actual class BinaryConstantExpr : ConstantExpr()
+public actual class BinaryConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class CompareConstantExpr : ConstantExpr()
+public actual class CompareConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class ExtractElementConstantExpr : ConstantExpr()
+public actual class ExtractElementConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class ExtractValueConstantExpr : ConstantExpr()
+public actual class ExtractValueConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class GetElementPtrConstantExpr : ConstantExpr()
+public actual class GetElementPtrConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class InsertElementConstantExpr : ConstantExpr()
+public actual class InsertElementConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class InsertValueConstantExpr : ConstantExpr()
+public actual class InsertValueConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class SelectConstantExpr : ConstantExpr()
+public actual class SelectConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class ShuffleVectorConstantExpr : ConstantExpr()
+public actual class ShuffleVectorConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
 
-public actual class UnaryConstantExpr : ConstantExpr()
+public actual class UnaryConstantExpr(public override val ref: LLVMValueRef?) :
+  ConstantExpr()
+
+@Suppress("ComplexMethod", "LongMethod")
+public fun ConstantExpr(ref: LLVMValueRef?): ConstantExpr {
+  return when (val opcode = LLVMGetConstOpcode(ref)) {
+    LLVMAdd -> BinaryConstantExpr(ref)
+    LLVMFAdd -> BinaryConstantExpr(ref)
+    LLVMSub -> BinaryConstantExpr(ref)
+    LLVMFSub -> BinaryConstantExpr(ref)
+    LLVMMul -> BinaryConstantExpr(ref)
+    LLVMFMul -> BinaryConstantExpr(ref)
+    LLVMUDiv -> BinaryConstantExpr(ref)
+    LLVMSDiv -> BinaryConstantExpr(ref)
+    LLVMFDiv -> BinaryConstantExpr(ref)
+    LLVMURem -> BinaryConstantExpr(ref)
+    LLVMSRem -> BinaryConstantExpr(ref)
+    LLVMFRem -> BinaryConstantExpr(ref)
+    LLVMShl -> BinaryConstantExpr(ref)
+    LLVMLShr -> BinaryConstantExpr(ref)
+    LLVMAShr -> BinaryConstantExpr(ref)
+    LLVMAnd -> BinaryConstantExpr(ref)
+    LLVMOr -> BinaryConstantExpr(ref)
+    LLVMXor -> BinaryConstantExpr(ref)
+    LLVMGetElementPtr -> GetElementPtrConstantExpr(ref)
+    LLVMICmp -> CompareConstantExpr(ref)
+    LLVMFCmp -> CompareConstantExpr(ref)
+    LLVMExtractElement -> ExtractElementConstantExpr(ref)
+    LLVMInsertElement -> InsertElementConstantExpr(ref)
+    LLVMShuffleVector -> ShuffleVectorConstantExpr(ref)
+    LLVMExtractValue -> ExtractValueConstantExpr(ref)
+    LLVMInsertValue -> InsertValueConstantExpr(ref)
+    LLVMFNeg -> UnaryConstantExpr(ref)
+    else -> error("Unsupported constant expression $opcode")
+  }
+}

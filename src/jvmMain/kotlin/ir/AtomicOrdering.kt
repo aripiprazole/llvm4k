@@ -16,25 +16,32 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class AtomicOrdering {
-  NotAtomic,
-  Unordered,
-  Monotonic,
-  Acquire,
-  Release,
-  AcquireRelease,
-  SequentiallyConsistent;
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingAcquire
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingAcquireRelease
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingMonotonic
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingNotAtomic
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingRelease
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingSequentiallyConsistent
+import org.bytedeco.llvm.global.LLVM.LLVMAtomicOrderingUnordered
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class AtomicOrdering(public val llvm: Int) {
+  NotAtomic(LLVMAtomicOrderingNotAtomic),
+  Unordered(LLVMAtomicOrderingUnordered),
+  Monotonic(LLVMAtomicOrderingMonotonic),
+  Acquire(LLVMAtomicOrderingAcquire),
+  Release(LLVMAtomicOrderingRelease),
+  AcquireRelease(LLVMAtomicOrderingAcquireRelease),
+  SequentiallyConsistent(LLVMAtomicOrderingSequentiallyConsistent);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): AtomicOrdering {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): AtomicOrdering {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

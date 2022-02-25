@@ -14,10 +14,8 @@
  *    limitations under the License.
  */
 
-package org.plank.llvm4k.ir
+package org.plank.llvm4k
 
-import org.bytedeco.llvm.global.LLVM
-
-public actual abstract class Constant : User() {
-  public actual open val isNullValue: Boolean get() = LLVM.LLVMIsNull(ref) == 1
+public interface Owner<T> {
+  public val ref: T?
 }

@@ -16,21 +16,22 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class UnnamedAddr {
-  None,
-  Local,
-  Global;
+import org.bytedeco.llvm.global.LLVM.*
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class UnnamedAddr(public val llvm: Int) {
+  None(LLVMNoUnnamedAddr),
+  Local(LLVMLocalUnnamedAddr),
+  Global(LLVMGlobalUnnamedAddr);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): UnnamedAddr {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): UnnamedAddr {
-      TODO("Not yet implemented")
+      return values().single { it.llvm == value.toInt() }
     }
   }
 }

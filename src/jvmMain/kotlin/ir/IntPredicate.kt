@@ -16,28 +16,38 @@
 
 package org.plank.llvm4k.ir
 
-public actual enum class IntPredicate {
-  EQ,
-  NE,
-  UGT,
-  UGE,
-  ULT,
-  ULE,
-  SGT,
-  SGE,
-  SLT,
-  SLE;
+import org.bytedeco.llvm.global.LLVM.LLVMIntEQ
+import org.bytedeco.llvm.global.LLVM.LLVMIntNE
+import org.bytedeco.llvm.global.LLVM.LLVMIntSGE
+import org.bytedeco.llvm.global.LLVM.LLVMIntSGT
+import org.bytedeco.llvm.global.LLVM.LLVMIntSLE
+import org.bytedeco.llvm.global.LLVM.LLVMIntSLT
+import org.bytedeco.llvm.global.LLVM.LLVMIntUGE
+import org.bytedeco.llvm.global.LLVM.LLVMIntUGT
+import org.bytedeco.llvm.global.LLVM.LLVMIntULE
+import org.bytedeco.llvm.global.LLVM.LLVMIntULT
 
-  public actual val value: UInt
-    get() = TODO("Not yet implemented")
+public actual enum class IntPredicate(public val llvm: Int) {
+  EQ(LLVMIntEQ),
+  NE(LLVMIntNE),
+  UGT(LLVMIntUGT),
+  UGE(LLVMIntUGE),
+  ULT(LLVMIntULT),
+  ULE(LLVMIntULE),
+  SGT(LLVMIntSGT),
+  SGE(LLVMIntSGE),
+  SLT(LLVMIntSLT),
+  SLE(LLVMIntSLE);
+
+  public actual val value: UInt get() = llvm.toUInt()
 
   public actual companion object {
     public actual fun byValue(value: Int): IntPredicate {
-      TODO("Not yet implemented")
+      return byValue(value.toUInt())
     }
 
     public actual fun byValue(value: UInt): IntPredicate {
-      TODO("Not yet implemented")
+      return values().single { it.value == value }
     }
   }
 }

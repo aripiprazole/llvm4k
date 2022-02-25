@@ -16,7 +16,9 @@
 
 package org.plank.llvm4k.ir
 
-public actual class Argument : Value(), NamedValue {
-  public actual val parent: Function
-    get() = TODO("Not yet implemented")
+import org.bytedeco.llvm.LLVM.LLVMValueRef
+import org.bytedeco.llvm.global.LLVM
+
+public actual class Argument(public override val ref: LLVMValueRef?) : Value(), NamedValue {
+  public actual val parent: Function get() = Function(LLVM.LLVMGetParamParent(ref))
 }
